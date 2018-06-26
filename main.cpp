@@ -2,6 +2,7 @@
 
 #include "header/State.h"
 #include "header/InstructionSet.h"
+#include "header/Logger.h"
 
 using namespace vm2;
 
@@ -18,7 +19,7 @@ int main(int argc, char** argv) {
     State* state = new State(argv[1]);
     InstructionSet* instructionSet = new InstructionSet();
 
-    while (state->readIp() != 'h'){
+    while (state->readIp() != 0x02){
         instructionSet->get(state->readIp())(state);
     }
 
