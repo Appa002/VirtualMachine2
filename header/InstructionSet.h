@@ -8,25 +8,23 @@
 
 #include <cstdint>
 #include <unordered_map>
+#include <functional>
 
 #include "State.h"
+#include "Instruction.h"
 
 namespace vm2{
-
-    typedef void(* instruction_t)(vm2::State*);
-
     class InstructionSet {
     public:
         InstructionSet();
         ~InstructionSet();
     private:
-        std::unordered_map<uint8_t, instruction_t>* instructionMap;
+        std::unordered_map<uint8_t, vm2::Instruction>* instructionMap;
 
     private:
-        static void hello(State* state);
 
     public:
-        instruction_t get(uint8_t opt);
+        vm2::Instruction get(uint8_t opt);
     };
 }
 
