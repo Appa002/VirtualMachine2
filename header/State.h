@@ -17,6 +17,7 @@ namespace vm2{
     public:
         State() = delete;
         explicit State(std::string filePath);
+        explicit State(std::vector<uint8_t> code);
 
     private:
         uint8_t* ip;

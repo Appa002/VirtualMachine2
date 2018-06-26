@@ -17,6 +17,17 @@ vm2::State::State(std::string filePath) {
     linearMemory.push_back(Page());
 }
 
+
+vm2::State::State(std::vector<uint8_t> code) {
+    byteCode.swap(code);
+    ip = &(byteCode[0]);
+    stack = Stack();
+    registers.reserve(10);
+    linearMemory.reserve(5);
+
+    linearMemory.push_back(Page());
+}
+
 void vm2::State::loadFile(std::string &filePath) {
     std::ifstream file;
     file.open(filePath, std::ios::binary | std::ios::ate);
