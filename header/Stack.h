@@ -8,21 +8,26 @@
 #include <vector>
 #include <cstdint>
 
+#include "StackObject.h"
+
 namespace vm2{
     class Stack {
     public:
         Stack();
-        ~Stack();
+        ~Stack() = default;
 
     private:
-        std::vector<uint32_t>* data;
+        std::vector<vm2::StackObject>* data;
 
     public:
-        void push(uint32_t value);
-        uint32_t pop();
+        void push(uint32_t value, uint8_t opcode);
+        void push(StackObject& stackObject);
+        void push(StackObject&& stackObject);
 
-        void write(size_t index, uint32_t value);
-        uint32_t read(size_t index);
+        StackObject pop();
+
+        void write(size_t index, StackObject value);
+        StackObject read(size_t index);
     };
 }
 

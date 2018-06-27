@@ -4,28 +4,35 @@
 
 #include "../header/Stack.h"
 
+#include <algorithm>
+
 vm2::Stack::Stack() {
-    data = new std::vector<uint32_t>();
-
+    data = new std::vector<StackObject>();
     data->reserve(1024 / 4);
+    std::fill(data->begin(), data->begin() + 1024 / 4, StackObject());
 }
 
-vm2::Stack::~Stack() {
-    delete data;
+void vm2::Stack::push(uint32_t value, uint8_t opcode) {
+    data->push_back(StackObject(value, opcode));
 }
 
-void vm2::Stack::push(uint32_t value) {
+void vm2::Stack::push(StackObject& value) {
     data->push_back(value);
 }
 
-uint32_t vm2::Stack::pop() {
+void vm2::Stack::push(StackObject&& value) {
+    data->push_back(value);
+}
+
+vm2::StackObject vm2::Stack::pop() {
     return data->at(data->size() - 1);
 }
 
-void vm2::Stack::write(size_t index, uint32_t value) {
+void vm2::Stack::write(size_t index, vm2::StackObject value) {
     data->at(index) = value;
 }
 
-uint32_t vm2::Stack::read(size_t index) {
+vm2::StackObject vm2::Stack::read(size_t index) {
     return data->at(index);
 }
+
