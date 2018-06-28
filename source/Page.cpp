@@ -33,11 +33,6 @@ uint32_t vm2::Page::readFrom(unsigned long index) {
     throw std::runtime_error("Index out of range");
 }
 
-int vm2::Page::destroy() {
-    delete data;
-    pageSize = 0;
-}
-
 unsigned long vm2::Page::size() {
     return pageSize;
 }

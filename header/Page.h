@@ -22,7 +22,6 @@ namespace vm2{
         int writeTo(unsigned long index, uint32_t content);
         uint32_t readFrom(unsigned long index);
         unsigned long size();
-        int destroy();
     };
 }
 
