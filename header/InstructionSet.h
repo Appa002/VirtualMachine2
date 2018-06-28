@@ -17,12 +17,14 @@ namespace vm2{
     class InstructionSet {
     public:
         InstructionSet();
-        ~InstructionSet();
     private:
-        std::unordered_map<uint8_t, vm2::Instruction>* instructionMap;
+        std::unordered_map<uint8_t, vm2::Instruction> instructionMap;
 
     private:
-
+        /// Instructions
+        static void op_push (State* state);
+        static void op_remove (State* state);
+        ///
     public:
         vm2::Instruction get(uint8_t opt);
     };
