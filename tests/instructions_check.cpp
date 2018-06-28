@@ -10,10 +10,49 @@
 using namespace vm2;
 
 int unit_readRegisterN(){
+    for(uint8_t i = 0; i < 10; i++){
+        const uint8_t setOpcode = (uint8_t)0xb0 + i;
+        const uint8_t readOpcode = (uint8_t)0xa0 + i;
+        std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, setOpcode, readOpcode, 0x01});
+        State* state = new State(code);
+        InstructionSet instructionSet = InstructionSet();
+
+        instructionSet.get(state->readIp())->call(state); // push
+        ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+        ASSERT_EQUAL(state->getStack().peek().get(), 3);
+
+        instructionSet.get(state->readIp())->call(state); // set register i
+        ASSERT_EQUAL(state->readRegister(i), 3);
+        ASSERT_EQUAL(state->readIp(), readOpcode); // did set register i iterate the ip?
+
+        instructionSet.get(state->readIp())->call(state); // read register i
+        ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+        ASSERT_EQUAL(state->getStack().peek().get(), 3);
+
+        ASSERT_EQUAL(state->readIp(), 0x01);
+        delete state;
+    }
     return 0;
 }
 
 int unit_writeRegisterN(){
+    for(uint8_t i = 0; i < 10; i++){
+        const uint8_t writeOpcode = (uint8_t)0xb0 + i;
+        std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, writeOpcode, 0x01});
+        State* state = new State(code);
+        InstructionSet instructionSet = InstructionSet();
+
+        instructionSet.get(state->readIp())->call(state); // push
+        ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+        ASSERT_EQUAL(state->getStack().peek().get(), 3);
+
+        instructionSet.get(state->readIp())->call(state); // set register i
+        ASSERT_EQUAL(state->readRegister(i), 3);
+
+        ASSERT_EQUAL(state->readIp(), 0x01);
+        delete state;
+    }
+
     return 0;
 }
 
@@ -22,7 +61,7 @@ int unit_push(){
     State* state = new State(code);
     InstructionSet instructionSet = InstructionSet();
 
-    instructionSet.get(code[0]).call(state);
+    instructionSet.get(code[0])->call(state);
 
     ASSERT_EQUAL(state->readIp(), 0x01);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
@@ -37,9 +76,9 @@ int unit_remove(){
     InstructionSet instructionSet = InstructionSet();
 
     State* state = new vm2::State(code);
-    instructionSet.get(state->readIp()).call(state);
-    instructionSet.get(state->readIp()).call(state);
-    instructionSet.get(state->readIp()).call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
 
     ASSERT_EQUAL(state->readIp(), 0x01);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
