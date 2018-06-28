@@ -25,8 +25,15 @@ void vm2::Stack::push(StackObject&& value) {
 }
 
 vm2::StackObject vm2::Stack::pop() {
+    StackObject object = data->at(data->size() - 1);
+    data->pop_back();
+    return object;
+}
+
+vm2::StackObject vm2::Stack::peek() {
     return data->at(data->size() - 1);
 }
+
 
 void vm2::Stack::write(size_t index, vm2::StackObject value) {
     data->at(index) = value;

@@ -24,6 +24,7 @@ namespace vm2{
         void push(StackObject& stackObject);
         void push(StackObject&& stackObject);
 
+        StackObject peek();
         StackObject pop();
 
         void write(size_t index, StackObject value);
