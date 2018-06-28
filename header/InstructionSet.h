@@ -12,13 +12,15 @@
 
 #include "State.h"
 #include "Instruction.h"
+#include "IInstruction.h"
 
 namespace vm2{
     class InstructionSet {
     public:
         InstructionSet();
+        ~InstructionSet();
     private:
-        std::unordered_map<uint8_t, vm2::Instruction> instructionMap;
+        std::unordered_map<uint8_t, vm2::IInstruction*> instructionMap;
 
     private:
         /// Instructions
@@ -26,7 +28,7 @@ namespace vm2{
         static void op_remove (State* state);
         ///
     public:
-        vm2::Instruction get(uint8_t opt);
+        vm2::IInstruction* get(uint8_t opt);
     };
 }
 

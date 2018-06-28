@@ -10,19 +10,26 @@
 vm2::InstructionSet::InstructionSet() {
     // Register readRegister0...readRegister9 instruction
     for(uint8_t i = 0; i < 10; i++){
-        instructionMap.operator[]((uint8_t)0xa0 + i) = vm2::ReadNthRegisterInstruction(i);
+        instructionMap.operator[]((uint8_t)0xa0 + i) = new vm2::ReadNthRegisterInstruction(i);
     }
 
     // Register setRegister0...setRegister9 instruction
     for(uint8_t i = 0; i < 10; i++){
-        instructionMap.operator[]((uint8_t)0xb0 + i) = vm2::SetNthRegisterInstruction(i);
+        instructionMap.operator[]((uint8_t)0xb0 + i) = new vm2::SetNthRegisterInstruction(i);
     }
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction>(0xd1, op_push));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction>(0xd2, op_remove));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_push)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd2, new Instruction(op_remove)));
 }
 
-vm2::Instruction vm2::InstructionSet::get(uint8_t opt) {
+
+vm2::InstructionSet::~InstructionSet() {
+    for(auto& it : this->instructionMap){
+        delete it.second;
+    }
+}
+
+vm2::IInstruction* vm2::InstructionSet::get(uint8_t opt) {
     if(instructionMap.find(opt) == instructionMap.cend())
         throw std::runtime_error("Unknown opt code");
     return instructionMap.at(opt);
