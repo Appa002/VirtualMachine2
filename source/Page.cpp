@@ -16,7 +16,8 @@ vm2::Page::Page(unsigned long size_) {
 }
 
 vm2::Page::~Page() {
-    destroy();
+    delete[] data;
+    pageSize = 0;
 }
 
 int vm2::Page::writeTo(unsigned long index, uint32_t content) {
