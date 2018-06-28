@@ -7,9 +7,10 @@
 
 #include <functional>
 #include "State.h"
+#include "IInstruction.h"
 
 namespace vm2{
-    class Instruction {
+    class Instruction : public IInstruction{
     public:
         Instruction() = default;
         Instruction(std::function<void(vm2::State*)> func);
@@ -18,8 +19,8 @@ namespace vm2{
         std::function<void(vm2::State*)> func;
 
     public:
-        virtual Instruction operator()(vm2::State* state);
-        Instruction call(vm2::State* state);
+        void operator()(vm2::State* state) override;
+        void call(vm2::State* state) override;
     };
 }
 
