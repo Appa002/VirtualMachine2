@@ -17,5 +17,7 @@ vm2::Instruction vm2::Instruction::operator()(vm2::State *state) {
     return *this;
 }
 
-
+vm2::Instruction vm2::Instruction::call(vm2::State* state) {
+    return this->operator()(state);
+}
 

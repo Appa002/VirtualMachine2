@@ -19,6 +19,7 @@ namespace vm2{
 
     public:
         virtual Instruction operator()(vm2::State* state);
+        Instruction call(vm2::State* state);
     };
 }
 
