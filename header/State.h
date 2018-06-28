@@ -18,13 +18,14 @@ namespace vm2{
         State() = delete;
         explicit State(std::string filePath);
         explicit State(std::vector<uint8_t> code);
+        ~State();
 
     private:
         uint8_t* ip;
         std::vector<uint8_t> byteCode;
         std::vector<uint32_t> registers;
         Stack stack;
-        std::vector<Page> linearMemory;
+        std::vector<Page*> linearMemory;
 
     private:
         void loadFile(std::string& filePath);
@@ -33,6 +34,7 @@ namespace vm2{
         void iterateIp(size_t amount = 1);
         void setIp(size_t index);
         uint8_t readIp();
+        uint8_t peekIp(int offset = 0);
 
         void setRegister(size_t number, uint32_t value);
         uint32_t readRegister(size_t number);

@@ -14,19 +14,21 @@ vm2::State::State(std::string filePath) {
     registers.reserve(10);
     linearMemory.reserve(5);
 
-    linearMemory.push_back(Page());
+    linearMemory.push_back(new Page());
 }
 
 
 vm2::State::State(std::vector<uint8_t> code) {
-    byteCode.swap(code);
+    byteCode = code;
     ip = &(byteCode[0]);
     stack = Stack();
     registers.reserve(10);
     linearMemory.reserve(5);
 
-    linearMemory.push_back(Page());
+    linearMemory.push_back(new Page());
 }
+
+
 
 void vm2::State::loadFile(std::string &filePath) {
     std::ifstream file;
@@ -66,6 +68,12 @@ uint8_t vm2::State::readIp() {
     return *ip;
 }
 
+uint8_t vm2::State::peekIp(int offset) {
+    if((ip - &byteCode[0]) + offset < 0 || (ip - &byteCode[0]) + offset > byteCode.size())
+        throw std::runtime_error("Peeking ip at undefined address!");
+    return *(ip + offset);
+}
+
 void vm2::State::setRegister(size_t number, uint32_t value) {
     if(number <= 9 && number >= 0)
         registers[number] = value;
@@ -83,24 +91,24 @@ uint32_t vm2::State::readRegister(size_t number) {
 void vm2::State::writeMemory(size_t address, uint32_t value) {
     size_t pagesCombinedSize = 0;
     for(auto& page : linearMemory){
-        pagesCombinedSize += page.size();
+        pagesCombinedSize += page->size();
         if(address < pagesCombinedSize){
-            page.writeTo(pagesCombinedSize - address, value);
+            page->writeTo(pagesCombinedSize - address, value);
             return;
         }
     }
 
     linearMemory.push_back(
-            Page(linearMemory.at(linearMemory.size() - 1).size() * 2));
+            new Page(linearMemory.at(linearMemory.size() - 1)->size() * 2));
     writeMemory(address, value);
 }
 
 uint32_t vm2::State::readMemory(size_t address) {
     size_t pagesCombinedSize = 0;
     for(auto& page : linearMemory){
-        pagesCombinedSize += page.size();
+        pagesCombinedSize += page->size();
         if(address < pagesCombinedSize)
-            return page.readFrom(pagesCombinedSize - address);
+            return page->readFrom(pagesCombinedSize - address);
 
     }
 }
@@ -108,5 +116,12 @@ uint32_t vm2::State::readMemory(size_t address) {
 vm2::Stack vm2::State::getStack() {
     return stack;
 }
+
+vm2::State::~State() {
+    for(auto* it : this->linearMemory){
+        delete it;
+    }
+}
+
 
 
