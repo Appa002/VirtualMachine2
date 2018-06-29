@@ -59,7 +59,7 @@ int unit_setRegisterN(){
 }
 
 int unit_push(){
-    std::vector<uint8_t> code ({0xd0, 0x0, 0x0, 0x0, 0x03, 0x01});
+    std::vector<uint8_t> code ({0xd0, 0x80, 0x80, 0x80, 0x03, 0x01});
     State* state = new State(code);
     InstructionSet instructionSet = InstructionSet();
 
@@ -67,7 +67,7 @@ int unit_push(){
 
     ASSERT_EQUAL(state->readIp(), 0x01);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 2155905027);
     ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd0);
 
     delete(state);
