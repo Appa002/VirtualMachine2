@@ -19,7 +19,9 @@ namespace vm2 {
         bool good;
 
     public:
-        uint32_t get();
+        uint32_t getValue();
+        uint8_t getOpcode();
+
         void set(uint32_t val, uint8_t opcode);
         bool isGood();
         void makeBad();

@@ -10,7 +10,7 @@ vm2::StackObject::StackObject(uint32_t val, uint8_t opcode) {
 
 vm2::StackObject::StackObject() : value(0), opcode(0), good(false) {}
 
-uint32_t vm2::StackObject::get() {
+uint32_t vm2::StackObject::getValue() {
     return this->value;
 }
 
@@ -26,4 +26,8 @@ bool vm2::StackObject::isGood() {
 
 void vm2::StackObject::makeBad() {
     this->good = false;
+}
+
+uint8_t vm2::StackObject::getOpcode() {
+    return this->opcode;
 }
