@@ -43,10 +43,11 @@ vm2::IInstruction* vm2::InstructionSet::get(uint8_t opt) {
 /// Instructions
 
 void vm2::InstructionSet::op_push(vm2::State *state) {
-    uint32_t value = state->peekIp(1);
-    value = value << 8 | state->peekIp(2);
-    value = value << 16 | state->peekIp(3);
-    value = value << 31 | state->peekIp(4);
+    uint32_t value = 0;
+    value = value | (state->peekIp(1) << 24);
+    value = value | (state->peekIp(2) << 16);
+    value = value | (state->peekIp(3) << 8);
+    value = value | (state->peekIp(4));
 
     state->getStack().push(value, 0xd0);
     state->iterateIp(5);
