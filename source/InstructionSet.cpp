@@ -19,8 +19,9 @@ vm2::InstructionSet::InstructionSet() {
     }
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc0, new Instruction(op_move)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_push)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd2, new Instruction(op_remove)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc1, new Instruction(op_read)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd0, new Instruction(op_push)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_remove)));
 }
 
 
@@ -44,7 +45,7 @@ void vm2::InstructionSet::op_push(vm2::State *state) {
     value = value << 16 | state->peekIp(3);
     value = value << 31 | state->peekIp(4);
 
-    state->getStack().push(value, 0xd1);
+    state->getStack().push(value, 0xd0);
     state->iterateIp(5);
 }
 
@@ -60,6 +61,16 @@ void vm2::InstructionSet::op_move(vm2::State *state) {
         throw std::runtime_error("Move has received an none good argument.");
 
     state->writeMemory(addressArgument.getValue(), valueArgument.getValue());
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_read(vm2::State *state) {
+    StackObject addressArgument = state->getStack().pop();
+    if(!addressArgument.isGood())
+        throw std::runtime_error("Read has received an none good argument.");
+    uint32_t readValue = state->readMemory(addressArgument.getValue());
+
+    state->getStack().push(readValue, 0xc1);
     state->iterateIp();
 }
 

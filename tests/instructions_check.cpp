@@ -13,7 +13,7 @@ int unit_readRegisterN(){
     for(uint8_t i = 0; i < 10; i++){
         const uint8_t setOpcode = (uint8_t)0xb0 + i;
         const uint8_t readOpcode = (uint8_t)0xa0 + i;
-        std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, setOpcode, readOpcode, 0x01});
+        std::vector<uint8_t> code ({0xd0, 0x0, 0x0, 0x0, 0x03, setOpcode, readOpcode, 0x01});
         State* state = new State(code);
         InstructionSet instructionSet = InstructionSet();
 
@@ -39,14 +39,14 @@ int unit_readRegisterN(){
 int unit_setRegisterN(){
     for(uint8_t i = 0; i < 10; i++){
         const uint8_t setOpcode = (uint8_t)0xb0 + i;
-        std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, setOpcode, 0x01});
+        std::vector<uint8_t> code ({0xd0, 0x0, 0x0, 0x0, 0x03, setOpcode, 0x01});
         State* state = new State(code);
         InstructionSet instructionSet = InstructionSet();
 
         instructionSet.get(state->readIp())->call(state); // push
         ASSERT_EQUAL(state->getStack().peek().isGood(), true);
         ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-        ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd1);
+        ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd0);
 
         instructionSet.get(state->readIp())->call(state); // set register i
         ASSERT_EQUAL(state->readRegister(i), 3);
@@ -59,7 +59,7 @@ int unit_setRegisterN(){
 }
 
 int unit_push(){
-    std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, 0x01});
+    std::vector<uint8_t> code ({0xd0, 0x0, 0x0, 0x0, 0x03, 0x01});
     State* state = new State(code);
     InstructionSet instructionSet = InstructionSet();
 
@@ -68,14 +68,14 @@ int unit_push(){
     ASSERT_EQUAL(state->readIp(), 0x01);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
     ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd1);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd0);
 
     delete(state);
     return 0;
 }
 
 int unit_remove(){
-    std::vector<uint8_t> code ({0xd1, 0, 0, 0, 3, 0xd1, 0, 0, 0, 4, 0xd2, 0x01});
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 3, 0xd0, 0, 0, 0, 4, 0xd1, 0x01});
     InstructionSet instructionSet = InstructionSet();
 
     State* state = new vm2::State(code);
@@ -92,7 +92,7 @@ int unit_remove(){
 }
 
 int unit_move(){
-    std::vector<uint8_t> code ({0xd1, 0, 0, 0, 3, 0xd1, 0, 0, 0, 0, 0xc0, 0x01});
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 3, 0xd0, 0, 0, 0, 0, 0xc0, 0x01});
     InstructionSet instructionSet = InstructionSet();
 
     State* state = new vm2::State(code);
@@ -101,6 +101,21 @@ int unit_move(){
     instructionSet.get(state->readIp())->call(state);
 
     ASSERT_EQUAL(state->readMemory(0), 3);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    return 0;
+}
+
+int unit_read(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 0, 0xc1, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    state->writeMemory(0, 3);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+    ASSERT_EQUAL(state->readIp(), 0x01);
     return 0;
 }
 
@@ -109,7 +124,8 @@ int main(){
     register_test(unit_setRegisterN);
     register_test(unit_push);
     register_test(unit_remove);
-    register_test(unit_move)
+    register_test(unit_move);
+    register_test(unit_read);
     start_unit_test();
     end_unit_test();
 }
