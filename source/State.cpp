@@ -90,12 +90,14 @@ uint32_t vm2::State::readRegister(size_t number) {
 
 void vm2::State::writeMemory(size_t address, uint32_t value) {
     size_t pagesCombinedSize = 0;
+    size_t bytesInPreviousPages = 0;
     for(auto& page : linearMemory){
         pagesCombinedSize += page->size();
         if(address < pagesCombinedSize){
-            page->writeTo(pagesCombinedSize - address, value);
+            page->writeTo(address - bytesInPreviousPages, value);
             return;
         }
+        bytesInPreviousPages += page->size();
     }
 
     linearMemory.push_back(
@@ -105,11 +107,12 @@ void vm2::State::writeMemory(size_t address, uint32_t value) {
 
 uint32_t vm2::State::readMemory(size_t address) {
     size_t pagesCombinedSize = 0;
+    size_t bytesInPreviousPages = 0;
     for(auto& page : linearMemory){
         pagesCombinedSize += page->size();
         if(address < pagesCombinedSize)
-            return page->readFrom(pagesCombinedSize - address);
-
+            return page->readFrom(address - bytesInPreviousPages);
+        bytesInPreviousPages += page->size();
     }
 }
 
