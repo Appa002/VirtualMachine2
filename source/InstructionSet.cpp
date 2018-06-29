@@ -20,8 +20,11 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc0, new Instruction(op_move)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc1, new Instruction(op_read)));
+
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd0, new Instruction(op_push)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_remove)));
+
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe0, new Instruction(op_uadd)));
 }
 
 
@@ -73,5 +76,19 @@ void vm2::InstructionSet::op_read(vm2::State *state) {
     state->getStack().push(readValue, 0xc1);
     state->iterateIp();
 }
+
+void vm2::InstructionSet::op_uadd(vm2::State *state) {
+    StackObject a = state->getStack().pop();
+    StackObject b = state->getStack().pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("uadd has received an none good argument.");
+
+    uint32_t value = a.getValue() + b.getValue();
+    state->getStack().push(value, 0xe0);
+
+    state->iterateIp();
+}
+
 
 ///

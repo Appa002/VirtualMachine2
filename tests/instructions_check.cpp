@@ -119,6 +119,21 @@ int unit_read(){
     return 0;
 }
 
+int unit_uadd(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 1, 0xd0, 0, 0, 0, 4, 0xe0, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -126,6 +141,8 @@ int main(){
     register_test(unit_remove);
     register_test(unit_move);
     register_test(unit_read);
+    register_test(unit_uadd);
+
     start_unit_test();
     end_unit_test();
 }
