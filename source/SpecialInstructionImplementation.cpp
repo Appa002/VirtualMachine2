@@ -25,7 +25,7 @@ void vm2::SetNthRegisterInstruction::operator()(vm2::State *state) {
     if(!obj.isGood())
         throw std::runtime_error("Trying to write none good value to a register.");
 
-    state->setRegister((uint32_t)n, obj.get());
+    state->setRegister((uint32_t)n, obj.getValue());
     state->iterateIp();
 }
 
