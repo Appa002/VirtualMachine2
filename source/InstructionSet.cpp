@@ -18,6 +18,7 @@ vm2::InstructionSet::InstructionSet() {
         instructionMap.operator[]((uint8_t)0xb0 + i) = new vm2::SetNthRegisterInstruction(i);
     }
 
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc0, new Instruction(op_move)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_push)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd2, new Instruction(op_remove)));
 }
@@ -49,6 +50,16 @@ void vm2::InstructionSet::op_push(vm2::State *state) {
 
 void vm2::InstructionSet::op_remove(vm2::State *state) {
     state->getStack().pop();
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_move(vm2::State *state) {
+    StackObject addressArgument = state->getStack().pop();
+    StackObject valueArgument = state->getStack().pop();
+    if(!valueArgument.isGood() || !addressArgument.isGood())
+        throw std::runtime_error("Move has received an none good argument.");
+
+    state->writeMemory(addressArgument.getValue(), valueArgument.getValue());
     state->iterateIp();
 }
 

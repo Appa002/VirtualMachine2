@@ -91,11 +91,25 @@ int unit_remove(){
     return 0;
 }
 
+int unit_move(){
+    std::vector<uint8_t> code ({0xd1, 0, 0, 0, 3, 0xd1, 0, 0, 0, 0, 0xc0, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+
+    State* state = new vm2::State(code);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readMemory(0), 3);
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
     register_test(unit_push);
     register_test(unit_remove);
+    register_test(unit_move)
     start_unit_test();
     end_unit_test();
 }
