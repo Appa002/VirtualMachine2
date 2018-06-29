@@ -19,7 +19,7 @@ int unit_readRegisterN(){
 
         instructionSet.get(state->readIp())->call(state); // push
         ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-        ASSERT_EQUAL(state->getStack().peek().get(), 3);
+        ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
 
         instructionSet.get(state->readIp())->call(state); // set register i
         ASSERT_EQUAL(state->readRegister(i), 3);
@@ -27,7 +27,8 @@ int unit_readRegisterN(){
 
         instructionSet.get(state->readIp())->call(state); // read register i
         ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-        ASSERT_EQUAL(state->getStack().peek().get(), 3);
+        ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+        ASSERT_EQUAL(state->getStack().peek().getOpcode(), readOpcode);
 
         ASSERT_EQUAL(state->readIp(), 0x01);
         delete state;
@@ -35,16 +36,17 @@ int unit_readRegisterN(){
     return 0;
 }
 
-int unit_writeRegisterN(){
+int unit_setRegisterN(){
     for(uint8_t i = 0; i < 10; i++){
-        const uint8_t writeOpcode = (uint8_t)0xb0 + i;
-        std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, writeOpcode, 0x01});
+        const uint8_t setOpcode = (uint8_t)0xb0 + i;
+        std::vector<uint8_t> code ({0xd1, 0x0, 0x0, 0x0, 0x03, setOpcode, 0x01});
         State* state = new State(code);
         InstructionSet instructionSet = InstructionSet();
 
         instructionSet.get(state->readIp())->call(state); // push
         ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-        ASSERT_EQUAL(state->getStack().peek().get(), 3);
+        ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+        ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd1);
 
         instructionSet.get(state->readIp())->call(state); // set register i
         ASSERT_EQUAL(state->readRegister(i), 3);
@@ -65,7 +67,8 @@ int unit_push(){
 
     ASSERT_EQUAL(state->readIp(), 0x01);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().pop().get(), 3);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd1);
 
     delete(state);
     return 0;
@@ -82,7 +85,7 @@ int unit_remove(){
 
     ASSERT_EQUAL(state->readIp(), 0x01);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().pop().get(), 3);
+    ASSERT_EQUAL(state->getStack().pop().getValue(), 3);
 
     delete(state);
     return 0;
@@ -90,7 +93,7 @@ int unit_remove(){
 
 int main(){
     register_test(unit_readRegisterN);
-    register_test(unit_writeRegisterN);
+    register_test(unit_setRegisterN);
     register_test(unit_push);
     register_test(unit_remove);
     start_unit_test();
