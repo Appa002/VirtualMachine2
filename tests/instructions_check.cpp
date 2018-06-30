@@ -116,6 +116,7 @@ int unit_read(){
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
     ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
     ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
     return 0;
 }
 
@@ -131,6 +132,7 @@ int unit_uadd(){
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
     ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
     ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
     return 0;
 }
 
