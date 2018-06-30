@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../header/InstructionSet.h"
 #include "../header/SpecialInstructionImplementation.h"
+#include "../header/maths.h"
 
 
 vm2::InstructionSet::InstructionSet() {
@@ -25,6 +26,7 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_remove)));
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe0, new Instruction(op_uadd)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe1, new Instruction(op_sadd)));
 }
 
 
@@ -88,6 +90,18 @@ void vm2::InstructionSet::op_uadd(vm2::State *state) {
     uint32_t value = a.getValue() + b.getValue();
     state->getStack().push(value, 0xe0);
 
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_sadd(vm2::State *state) {
+    StackObject b = state->getStack().pop();
+    StackObject a = state->getStack().pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("sadd has received an none good argument.");
+
+    uint32_t value = maths::manualSignedAdding(a.getValue(), b.getValue());
+    state->getStack().push(value, 0xe1);
     state->iterateIp();
 }
 
