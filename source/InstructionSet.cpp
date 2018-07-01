@@ -38,8 +38,8 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe8, new Instruction(op_fmult)));
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe9, new Instruction(op_udiv)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xea, new Instruction(op_sdiv)));
 }
-
 
 vm2::InstructionSet::~InstructionSet() {
     for(auto& it : this->instructionMap){
@@ -184,9 +184,20 @@ void vm2::InstructionSet::op_udiv(vm2::State *state) {
     StackObject a = state->getStack().pop();
 
     if(!a.isGood() || !b.isGood())
-        throw std::runtime_error("ssub has received an none good argument.");
+        throw std::runtime_error("udiv has received an none good argument.");
     uint32_t value = a.getValue() / b.getValue();
     state->getStack().push(value, 0xe9);
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_sdiv(vm2::State *state) {
+    StackObject b = state->getStack().pop();
+    StackObject a = state->getStack().pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("ssub has received an none good argument.");
+    uint32_t value = maths::manualSignedDivision(a.getValue(), b.getValue());
+    state->getStack().push(value, 0xea);
     state->iterateIp();
 }
 
