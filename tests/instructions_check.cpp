@@ -249,6 +249,24 @@ int unit_fsub(){
     return 0;
 }
 
+int unit_umult(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 5, 0xd0, 0, 0, 0, 2, 0xe6, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 10);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe6);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+
+    delete(state);
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -261,6 +279,8 @@ int main(){
     register_test(unit_fadd);
     register_test(unit_usub);
     register_test(unit_ssub);
+    register_test(unit_fsub);
+    register_test(unit_umult);
 
     start_unit_test();
     end_unit_test();

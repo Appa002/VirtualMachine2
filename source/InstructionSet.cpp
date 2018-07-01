@@ -32,6 +32,8 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe3, new Instruction(op_usub)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe4, new Instruction(op_ssub)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe5, new Instruction(op_fsub)));
+
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe6, new Instruction(op_umult)));
 }
 
 
@@ -141,6 +143,18 @@ void vm2::InstructionSet::op_ssub(vm2::State *state) {
 
 void vm2::InstructionSet::op_fsub(vm2::State *state) {
     // Floats are hard; k?
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_umult(vm2::State *state) {
+    StackObject b = state->getStack().pop();
+    StackObject a = state->getStack().pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("umult has received an none good argument.");
+
+    uint32_t value = a.getValue() * b.getValue();
+    state->getStack().push(value, 0xe6);
     state->iterateIp();
 }
 
