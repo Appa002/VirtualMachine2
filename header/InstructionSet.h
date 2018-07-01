@@ -28,9 +28,12 @@ namespace vm2{
         static void op_read(State* state);
         static void op_push (State* state);
         static void op_remove (State* state);
+
         static void op_uadd(State* state);
         static void op_sadd(State* state);
         static void op_fadd(State* state);
+
+        static void op_usub(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);

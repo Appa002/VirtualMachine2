@@ -147,6 +147,7 @@ int unit_sadd(){
 
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
     ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe1);
     ASSERT_EQUAL(state->readIp(), 0x01);
     delete(state);
 
@@ -159,6 +160,7 @@ int unit_sadd(){
 
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
     ASSERT_EQUAL(state->getStack().peek().getValue(), 0x80000003);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe1);
     ASSERT_EQUAL(state->readIp(), 0x01);
 
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 5, 0xd0, 0, 0, 0, 2, 0xe1, 0x01});
@@ -170,6 +172,7 @@ int unit_sadd(){
 
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
     ASSERT_EQUAL(state->getStack().peek().getValue(), 7);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe1);
     ASSERT_EQUAL(state->readIp(), 0x01);
 
     delete(state);
@@ -177,6 +180,23 @@ int unit_sadd(){
 }
 
 int unit_fadd(){
+    return 0;
+}
+
+int unit_usub() {
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 5, 0xd0, 0, 0, 0, 2, 0xe3, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe3);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
     return 0;
 }
 
@@ -190,6 +210,7 @@ int main(){
     register_test(unit_uadd);
     register_test(unit_sadd);
     register_test(unit_fadd);
+    register_test(unit_usub);
     start_unit_test();
     end_unit_test();
 }
