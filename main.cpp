@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     State* state = new State(argv[1]);
     InstructionSet* instructionSet = new InstructionSet();
 
-    while (state->readIp() != 0x02){
+    while (state->readIp() != 0x11){
         instructionSet->get(state->readIp())(state);
     }
 
