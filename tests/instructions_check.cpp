@@ -387,6 +387,11 @@ int unit_fdiv(){
     return 0;
 }
 
+int unit_tof(){
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -406,6 +411,7 @@ int main(){
     register_test(unit_udiv);
     register_test(unit_sdiv);
     register_test(unit_fdiv);
+    register_test(unit_tof);
 
     start_unit_test();
     end_unit_test();
