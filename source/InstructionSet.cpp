@@ -39,6 +39,7 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe9, new Instruction(op_udiv)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xea, new Instruction(op_sdiv)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xeb, new Instruction(op_fdiv)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -198,6 +199,11 @@ void vm2::InstructionSet::op_sdiv(vm2::State *state) {
         throw std::runtime_error("ssub has received an none good argument.");
     uint32_t value = maths::manualSignedDivision(a.getValue(), b.getValue());
     state->getStack().push(value, 0xea);
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_fdiv(vm2::State *state) {
+    // floats are hard; k?
     state->iterateIp();
 }
 

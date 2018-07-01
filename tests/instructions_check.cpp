@@ -382,6 +382,11 @@ int unit_sdiv(){
     return 0;
 }
 
+int unit_fdiv(){
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -400,6 +405,7 @@ int main(){
     register_test(unit_fmult);
     register_test(unit_udiv);
     register_test(unit_sdiv);
+    register_test(unit_fdiv);
 
     start_unit_test();
     end_unit_test();
