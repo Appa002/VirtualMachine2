@@ -43,6 +43,7 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xec, new Instruction(op_tof)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xed, new Instruction(op_abs)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xee, new Instruction(op_ucmp)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -222,6 +223,23 @@ void vm2::InstructionSet::op_abs(vm2::State *state) {
 
     uint32_t value = arg.getValue() & 0xffffffff >> 1;
     state->getStack().push(value, 0xed);
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_ucmp(vm2::State *state) {
+    StackObject b = state->getStack().pop();
+    StackObject a = state->getStack().pop();
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("cmp has received an none good argument.");
+
+    uint32_t flag = 0;
+    if(a.getValue() == b.getValue())
+        flag = 0;
+    else if (a.getValue() < b.getValue())
+        flag = 1;
+    else if(a.getValue() > b.getValue())
+        flag = 2;
+    state->getStack().push(flag, 0xee);
     state->iterateIp();
 }
 

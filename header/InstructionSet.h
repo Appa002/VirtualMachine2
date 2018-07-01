@@ -47,6 +47,7 @@ namespace vm2{
 
         static void op_tof(State* state);
         static void op_abs(State* state);
+        static void op_ucmp(State *state);
 
         ///
     public:
