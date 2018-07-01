@@ -38,6 +38,7 @@ namespace vm2{
         static void op_fsub(State* state);
 
         static void op_umult(State* state);
+        static void op_smult(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);
