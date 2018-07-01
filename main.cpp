@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     InstructionSet* instructionSet = new InstructionSet();
 
     while (state->readIp() != 0x11){
-        instructionSet->get(state->readIp())(state);
+        instructionSet->get(state->readIp())->call(state);
     }
 
     delete state;
