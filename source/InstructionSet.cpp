@@ -105,5 +105,10 @@ void vm2::InstructionSet::op_sadd(vm2::State *state) {
     state->iterateIp();
 }
 
+void vm2::InstructionSet::op_fadd(vm2::State *state) {
+    // What is a float?
+    state->iterateIp();
+}
+
 
 ///

@@ -30,6 +30,7 @@ namespace vm2{
         static void op_remove (State* state);
         static void op_uadd(State* state);
         static void op_sadd(State* state);
+        static void op_fadd(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);

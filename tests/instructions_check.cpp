@@ -176,6 +176,10 @@ int unit_sadd(){
     return 0;
 }
 
+int unit_fadd(){
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -185,7 +189,7 @@ int main(){
     register_test(unit_read);
     register_test(unit_uadd);
     register_test(unit_sadd);
-
+    register_test(unit_fadd);
     start_unit_test();
     end_unit_test();
 }
