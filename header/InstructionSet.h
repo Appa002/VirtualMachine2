@@ -46,6 +46,7 @@ namespace vm2{
         static void op_fdiv(State* state);
 
         static void op_tof(State* state);
+        static void op_abs(State* state);
 
         ///
     public:

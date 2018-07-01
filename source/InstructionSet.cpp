@@ -42,6 +42,7 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xeb, new Instruction(op_fdiv)));
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xec, new Instruction(op_tof)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xed, new Instruction(op_abs)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -211,6 +212,16 @@ void vm2::InstructionSet::op_fdiv(vm2::State *state) {
 
 void vm2::InstructionSet::op_tof(vm2::State *state) {
     // no clue how floats work, yet.
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_abs(vm2::State *state) {
+    StackObject arg = state->getStack().pop();
+    if(!arg.isGood())
+        throw std::runtime_error("abs called with none good value!");
+
+    uint32_t value = arg.getValue() & 0xffffffff >> 1;
+    state->getStack().push(value, 0xed);
     state->iterateIp();
 }
 

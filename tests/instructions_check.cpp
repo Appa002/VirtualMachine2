@@ -392,6 +392,36 @@ int unit_tof(){
     return 0;
 }
 
+int unit_abs(){
+    std::vector<uint8_t> code ({0xd0, 0x80, 0, 0, 5, 0xed, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xed);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete state;
+
+    code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 5, 0xed, 0x01});
+    state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xed);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+
+    delete(state);
+    return 0;
+}
+
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -412,6 +442,7 @@ int main(){
     register_test(unit_sdiv);
     register_test(unit_fdiv);
     register_test(unit_tof);
+    register_test(unit_abs);
 
     start_unit_test();
     end_unit_test();
