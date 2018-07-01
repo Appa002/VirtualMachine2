@@ -1,0 +1,152 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[cm]{fullpage}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{footnote}
+
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+
+\usepackage{longtable}
+\makesavenoteenv{tabular}
+\author{Batburger}
+\title{Virtual Machine 2.0 Specification}
+
+\newenvironment{hex}[0]{\textcolor{gray}{0x}}
+
+\begin{document}
+	\tt
+	
+	\maketitle
+	\section{Definitions}
+	\label{definitions}
+	\begin{description}
+		\item[Value] A \textit{value} shall be a 32bit number.
+		
+		\item[Stack] The \textit{stack} is a data structure, from which one may only add a \textit{value} or may read, and than always remove, the lastly added \textit{value}.\footnote{We may refer to the \textit{value} which was added lastly as the \textit{top value}.} 
+
+		\item[Pushing] \textit{pushing} refers to the act of adding a new value onto the stack.
+		
+		\item[Poping] \textit{poping} refers to the act of reading the lastly pushed	 \textit{value} from the stack and removing it.
+
+		\item[Register] A \textit{register} stores one \textit{value} at a time. One can push the stored \textit{value} onto the \textit{stack} or pop a value from the \textit{stack} and store the poped value in the register.
+		
+		\item[Address] An \textit{address} shall be a 32bit number which describes the location of stored data.  		
+		
+		\item[Linear Memory] \textit{linear memory} refers to a data structure where one can write arbitrary many \textit{values} to an arbitrary \textit{address}\footnote{Address are numbered starting from 0.} \footnote{The \textit{linear memorys} \textit{address's} are in no way related to the \textit{address's} of other data structure.}. One can also push any \textit{value} stored in the \textit{linear memory} on to the stack.
+		
+		\item[State] The \textit{state} of the vm refers to the data which is stored in the \textit{linear memory}, \textit{registers}, \textit{instruction pointer} and \textit{stack}.		
+		
+		\item[Instruction] An \textit{instruction} shall be callable, and modify the state of the vm, when called.
+			
+		\item[Byte Code] The \textit{byte code} is an array of 8bit numbers which refer to instructions or static \textit{values}\footnote{4 8bit values are read and sticked together to build one 32bit number.}.	
+		
+		\item[Opcode] An \textit{opcode} is a 8bit number\footnote{Usually represented in hex.}, which uniquely defines an \textit{instruction}.
+		
+ 		\item[Argument]A \textit{argument} shall be a \textit{value} which is stored on the \textit{stack} and gets poped by an instruction.\footnote{We say the poped \textit{value} is the \textit{argument} of the instruction poping it.}
+ 		
+		\item[Instruction Pointer] The \textit{instruction pointer} is a pointer which points into the \textit{byte code}. 		
+ 		
+
+	\end{description}
+	\section{High Level Function}
+	\label{high_level_function}	
+	
+	The vm keeps track of the Instruction Pointer (IP). The IP points into the byte code starting at the first byte. The vm functions in a loop, executing the instruction which is defined by the opcode, to which the IP is currently pointing. Every instruction may or may not modify the state of the vm, but must always modify the ip. The vm stops executing when the ip points to the instruction \hex 11.
+	
+	\section{Technical notes}
+	\label{technical_notes}	
+	Every instruction is defined to be one byte in size. The signage and type of a value is interpreted by the instruction to which it is being passed.\footnote{E.g. some instructions might interpret a value as an float or as an signed/unsigned integer} The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
+	
+	\newpage
+	\section{Instruction Set}
+	\label{instruction_set}
+	{\small We use "..." to specify a range of numbers. The first and last values are both included in the range.} \\
+	\begin{longtable}[c]{c|l|p{9cm}}
+		\hline
+		Opcode & Name & Description \\
+		\hline
+		\hex a0...\hex a9 & readRegister0...readRegister9 & Pushes the value stored in a register onto the stack. \\
+		\hline
+		\hex b0...\hex b9 & setRegister0...setRegister9 & Writes one argument to the given register. \\
+		\hline
+		\hline
+		\hex c0 & move & Writes its first argument to an address, which is given by the second argument, into linear memory. \\
+		\hline		
+		\hex c1 & read & Pushes the value, specified by the address given as first argument, from linear memory onto the stack. \\
+		\hline	
+		\hline	
+		\hex d0 & push & Pushes a value, specified by the next 4 bytes in the byte code, onto the stack. \\
+		\hline		
+		\hex d1 & remove & Removes a value from the stack. \\
+		\hline	
+		\hline	
+		\hex e0 & uadd & Adds two arguments and pushes the result onto the stack. (All used values are interpreted to be unsigned) \\
+		\hline		
+		\hex e1 & sadd & Adds two arguments and pushes the result onto the stack. (All used values are interpreted to be signed) \\
+		\hline		
+		\hex e2 & fadd & Adds two arguments and pushes the result onto the stack. (All used values are interpreted to be floats) \\
+		\hline		
+		\hex e3 & usub & Subtracts two arguments and pushes the result onto the stack. (All used values are interpreted to be unsigned) \\
+		\hline		
+		\hex e4 & ssub & Subtracts two arguments and pushes the result onto the stack. (All used values are interpreted to be signed) \\		
+		\hline
+		\hex e5 & fsub & Subtracts two arguments and pushes the result onto the stack. (All used values are interpreted to be floats) \\		
+		\hline
+		\hex e6 & umult & Multiples two arguments and pushes the result onto the stack. (All used values are interpreted to be unsigned) \\	
+		\hline
+		\hex e7 & smult & Multiples two arguments and pushes the result onto the stack. (All used values are interpreted to be signed) \\	
+		\hline
+		\hex e8 & fmult & Multiples two arguments and pushes the result onto the stack. (All used values are interpreted to be floats) \\
+		\hline
+		\hex e9 & udiv & Divides two arguments and pushes the result onto the stack. (All used values are interpreted to be unsigned) \\	
+		\hline
+		\hex ea & sdiv & Divides two arguments and pushes the result onto the stack. (All used values are interpreted to be signed) \\	
+		\hline
+		\hex eb & fdiv & Divides two arguments and pushes the result onto the stack. (All used values are interpreted to be floats) \\
+		\hline
+		\hex ec & tof & One argument is transformed to be stored in float representation.\footnote{The instruction will store the number represented in its first argument with as much precision as a float allows. If precision is lost, no further actions are taken.} \\
+		\hline
+		\hex ed & abs & One argument is turned into a positive number. \\
+		\hline
+		\hex ee & ucmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnote{\label{cmp_footnote} \textit{0} represents arg1 = arg2, \textit{1} represents arg1\textless arg2, \textit{2} represents arg1\textgreater arg2.} (All values are interpreted to be unsigned) \\
+		\hline
+		\hex ef & scmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be signed) \\
+		\hline
+		\hex f0 & fcmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be floats) \\
+		\hline		
+		\hline
+		\hex 01 & jmp & Sets the ip to the address given by the first argument of this instruction. \\
+		\hline
+		\hex 02 & jless & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\textless arg2 (Arguments of \textit{cmp}). \\
+		\hline
+		\hex 03 & jgreater & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\textgreater arg2 (Arguments of \textit{cmp}). \\
+		\hline
+		\hex 04 & jequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1=arg2 (Arguments of \textit{cmp}). \\
+		\hline
+		\hex 05 & jNequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\(\neq \)arg2 (Arguments of \textit{cmp}). \\
+		\hline
+		\hex 06 & call & Sets the ip to the address specified in its first argument and pushes the address of this instruction in the byte code onto the stack. \\
+		\hline
+		\hex 07 & return & Looks through the stack, top to bottom, and jumps to the address which was put there by a previous \textit{call} instruction. \\
+		\hline
+		\hline
+		\hex 10 & int & Triggers the interrupt specified by its first argument.\footnote{See \hyperref[interrupts]{Section \ref*{interrupts}}} \\
+		\hline
+		\hex 11 & halt & Stops the vm. \\
+		\hline
+		\hex 12 & nop & Iterates the IP by one with no other changes to the state of the vm. \\
+		\hline
+		\caption{Instruction Set}
+		\end{longtable}
+	\section{Interrupts}
+	\label{interrupts}
+		
+\end{document}
