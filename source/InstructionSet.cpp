@@ -27,9 +27,10 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe0, new Instruction(op_uadd)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe1, new Instruction(op_sadd)));
-
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe2, new Instruction(op_fadd)));
+
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe3, new Instruction(op_usub)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe4, new Instruction(op_ssub)));
 }
 
 
@@ -123,6 +124,18 @@ void vm2::InstructionSet::op_usub(vm2::State *state) {
    uint32_t value = a.getValue() - b.getValue();
    state->getStack().push(value, 0xe3);
    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_ssub(vm2::State *state) {
+    StackObject b = state->getStack().pop();
+    StackObject a = state->getStack().pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("ssub has received an none good argument.");
+
+    uint32_t value = maths::manualSignedSubtracting(a.getValue(), b.getValue());
+    state->getStack().push(value, 0xe4);
+    state->iterateIp();
 }
 
 
