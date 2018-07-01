@@ -35,6 +35,7 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe6, new Instruction(op_umult)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe7, new Instruction(op_smult)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe8, new Instruction(op_fmult)));
 }
 
 
@@ -168,6 +169,11 @@ void vm2::InstructionSet::op_smult(vm2::State *state) {
 
     uint32_t value = maths::manualSignedMultiplication(a.getValue(), b.getValue());
     state->getStack().push(value, 0xe7);
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_fmult(vm2::State *state) {
+    // Floats are hard; k?
     state->iterateIp();
 }
 

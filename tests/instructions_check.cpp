@@ -312,6 +312,12 @@ int unit_smult(){
     delete(state);
     return 0;
 }
+
+int unit_fmult(){
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -327,6 +333,7 @@ int main(){
     register_test(unit_fsub);
     register_test(unit_umult);
     register_test(unit_smult);
+    register_test(unit_fmult);
 
     start_unit_test();
     end_unit_test();
