@@ -44,3 +44,18 @@ uint32_t vm2::maths::manualSignedSubtracting(uint32_t a, uint32_t b) {
             return (a + b) & 0xffffffff >> 1;
     }
 }
+
+uint32_t vm2::maths::manualSignedMultiplication(uint32_t a, uint32_t b){
+    bool isAPositive = (a & (uint32_t)1 << 31) == 0;
+    bool isBPositive = (b & (uint32_t)1 << 31) == 0;
+    bool sinageDiffers = isAPositive != isBPositive;
+    uint32_t aValue = a & 0xffffffff >> 1;
+    uint32_t bValue = b & 0xffffffff >> 1;
+
+    uint32_t value = aValue * bValue;
+    if(sinageDiffers)
+        value = value | (uint32_t)1 << 31;
+    else
+        value = value & 0xffffffff >> 1;
+    return value;
+}
