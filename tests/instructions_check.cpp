@@ -244,6 +244,11 @@ int unit_ssub() {
     return 0;
 }
 
+int unit_fsub(){
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);

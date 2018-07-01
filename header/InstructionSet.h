@@ -35,6 +35,7 @@ namespace vm2{
 
         static void op_usub(State* state);
         static void op_ssub(State* state);
+        static void op_fsub(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);
