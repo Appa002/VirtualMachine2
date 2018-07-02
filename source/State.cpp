@@ -126,5 +126,9 @@ vm2::State::~State() {
     }
 }
 
+uint32_t vm2::State::getIpIndex() {
+    return static_cast<uint32_t>(ip - &byteCode[0]);
+}
+
 
 

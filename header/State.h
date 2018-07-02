@@ -35,6 +35,7 @@ namespace vm2{
         void setIp(size_t index);
         uint8_t readIp();
         uint8_t peekIp(int offset = 0);
+        uint32_t getIpIndex();
 
         void setRegister(size_t number, uint32_t value);
         uint32_t readRegister(size_t number);
