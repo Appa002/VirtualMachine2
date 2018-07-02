@@ -46,6 +46,7 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xee, new Instruction(op_ucmp)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xef, new Instruction(op_scmp)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xf0, new Instruction(op_fcmp)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -261,6 +262,11 @@ void vm2::InstructionSet::op_scmp(vm2::State *state) {
             flag = 1; // => arg1 < arg2
         state->getStack().push(flag, 0xef);
     }
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_fcmp(vm2::State *state) {
+    // floats are hard!
     state->iterateIp();
 }
 

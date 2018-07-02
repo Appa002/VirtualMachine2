@@ -48,9 +48,9 @@ namespace vm2{
         static void op_tof(State* state);
         static void op_abs(State* state);
 
-        static void op_ucmp(State *state);
+        static void op_ucmp(State* state);
         static void op_scmp(State* state);
-
+        static void op_fcmp(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);

@@ -537,6 +537,10 @@ int unit_scmp(){
     return 0;
 }
 
+int unit_fcmp(){
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -560,6 +564,7 @@ int main(){
     register_test(unit_abs);
     register_test(unit_ucmp);
     register_test(unit_scmp);
+    register_test(unit_fcmp);
 
     start_unit_test();
     end_unit_test();
