@@ -541,6 +541,21 @@ int unit_fcmp(){
     return 0;
 }
 
+
+int unit_jmp(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 7, 0x01, 0x01, 'x'});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readIp(), 'x');
+
+    delete(state);
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -565,6 +580,7 @@ int main(){
     register_test(unit_ucmp);
     register_test(unit_scmp);
     register_test(unit_fcmp);
+    register_test(unit_jmp);
 
     start_unit_test();
     end_unit_test();
