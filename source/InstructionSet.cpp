@@ -54,6 +54,7 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x04, new Instruction(op_jequal)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x05, new Instruction(op_jNequal)));
 
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x06, new Instruction(op_call)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -316,7 +317,7 @@ void vm2::InstructionSet::op_jequal(vm2::State *state) {
     StackObject flag = state->getStack().pop();
 
     if(!address.isGood() || !flag.isGood())
-        throw std::runtime_error("jless received none good argument!");
+        throw std::runtime_error("jequal received none good argument!");
 
     if(flag.getValue() == 0)
         state->setIp(address.getValue());
@@ -330,13 +331,23 @@ void vm2::InstructionSet::op_jNequal(vm2::State *state) {
     StackObject flag = state->getStack().pop();
 
     if(!address.isGood() || !flag.isGood())
-        throw std::runtime_error("jless received none good argument!");
+        throw std::runtime_error("jNequal received none good argument!");
 
     if(flag.getValue() != 0)
         state->setIp(address.getValue());
     else
         state->iterateIp();
 
+}
+
+void vm2::InstructionSet::op_call(vm2::State *state) {
+    StackObject address = state->getStack().pop();
+    if(!address.isGood())
+        throw std::runtime_error("call received none good argument!");
+
+    uint32_t myAddress = state->getIpIndex();
+    state->getStack().push(myAddress, 0x06);
+    state->setIp(address.getValue());
 }
 
 ///
