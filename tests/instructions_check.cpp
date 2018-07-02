@@ -466,6 +466,77 @@ int unit_ucmp(){
     return 0;
 }
 
+int unit_scmp(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 2, 0xd0, 0, 0, 0, 2, 0xef, 0x01});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 0);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
+
+    code = std::vector<uint8_t> ({0xd0, 0x80, 0, 0, 2, 0xd0, 0x80, 0, 0, 2, 0xef, 0x01});
+    state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 0);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
+
+    code = std::vector<uint8_t> ({0xd0, 0x80, 0, 0, 1, 0xd0, 0, 0, 0, 1, 0xef, 0x01});
+    state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 1);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
+
+    code = std::vector<uint8_t> ({0xd0, 0x80, 0, 0, 1, 0xd0, 0x80, 0, 0, 2, 0xef, 0x01});
+    state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
+
+    code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 5, 0xd0, 0, 0, 0, 2, 0xef, 0x01});
+    state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->readIp(), 0x01);
+    delete(state);
+
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -488,6 +559,7 @@ int main(){
     register_test(unit_tof);
     register_test(unit_abs);
     register_test(unit_ucmp);
+    register_test(unit_scmp);
 
     start_unit_test();
     end_unit_test();

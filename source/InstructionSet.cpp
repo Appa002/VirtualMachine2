@@ -43,7 +43,9 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xec, new Instruction(op_tof)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xed, new Instruction(op_abs)));
+
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xee, new Instruction(op_ucmp)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xef, new Instruction(op_scmp)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -230,7 +232,7 @@ void vm2::InstructionSet::op_ucmp(vm2::State *state) {
     StackObject b = state->getStack().pop();
     StackObject a = state->getStack().pop();
     if(!a.isGood() || !b.isGood())
-        throw std::runtime_error("cmp has received an none good argument.");
+        throw std::runtime_error("ucmp has received an none good argument.");
 
     uint32_t flag = 0;
     if(a.getValue() == b.getValue())
@@ -240,6 +242,25 @@ void vm2::InstructionSet::op_ucmp(vm2::State *state) {
     else if(a.getValue() > b.getValue())
         flag = 2;
     state->getStack().push(flag, 0xee);
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_scmp(vm2::State *state) {
+    StackObject b = state->getStack().pop();
+    StackObject a = state->getStack().pop();
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("scmp has received none good argument.");
+
+    uint32_t flag = maths::manualSignedSubtracting(a.getValue(), b.getValue());
+    if(flag == 0) // arg1 == arg2
+        state->getStack().push(flag, 0xef);
+    else {
+        if ((flag & (uint32_t) 1 << 31) == 0) // has the subtraction yield a positive number?
+            flag = 2; // if yes => arg1 > arg2
+        else // the subtraction yielded a negative number
+            flag = 1; // => arg1 < arg2
+    }
+    state->getStack().push(flag, 0xef);
     state->iterateIp();
 }
 
