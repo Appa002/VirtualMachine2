@@ -745,6 +745,18 @@ int unit_int(){
     return 0;
 }
 
+int unit_nop(){
+    std::vector<uint8_t> code ({0x12, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readIp(), 0x11);
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -777,6 +789,7 @@ int main(){
     register_test(unit_call);
     register_test(unit_return);
     register_test(unit_int);
+    register_test(unit_nop);
 
     start_unit_test();
     end_unit_test();
