@@ -56,6 +56,8 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x06, new Instruction(op_call)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x07, new Instruction(op_return)));
+
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x10, new Instruction(op_int)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -361,6 +363,11 @@ void vm2::InstructionSet::op_return(vm2::State *state) {
         i++;
    }
    state->setIp(obj.getValue());
+}
+
+void vm2::InstructionSet::op_int(vm2::State *state) {
+    // Not sure what interrupts, if any, will exist.
+    state->iterateIp();
 }
 
 ///

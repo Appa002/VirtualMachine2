@@ -739,6 +739,12 @@ int unit_return(){
     delete(state);
     return 0;
 }
+
+int unit_int(){
+
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -770,6 +776,7 @@ int main(){
     register_test(unit_jNequal);
     register_test(unit_call);
     register_test(unit_return);
+    register_test(unit_int);
 
     start_unit_test();
     end_unit_test();
