@@ -556,6 +556,45 @@ int unit_jmp(){
     return 0;
 }
 
+int unit_jless(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 7, 0x02, 0x11, 'x'});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    state->getStack().push(0, 0x00);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readIp(), 0x11);
+    delete(state);
+
+    code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x02, 0x11, 'x'});
+    state = new vm2::State(code);
+
+    state->getStack().push(2, 0x00);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readIp(), 0x11);
+    delete(state);
+
+    code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x02, 0x11, 'x'});
+    state = new vm2::State(code);
+
+    state->getStack().push(1, 0x00);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readIp(), 'x');
+    delete(state);
+
+    return 0;
+}
+
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -581,6 +620,7 @@ int main(){
     register_test(unit_scmp);
     register_test(unit_fcmp);
     register_test(unit_jmp);
+    register_test(unit_jless);
 
     start_unit_test();
     end_unit_test();

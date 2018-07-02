@@ -49,6 +49,8 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xf0, new Instruction(op_fcmp)));
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x01, new Instruction(op_jmp)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x02, new Instruction(op_jless)));
+
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -278,6 +280,19 @@ void vm2::InstructionSet::op_jmp(vm2::State *state) {
         throw std::runtime_error("jmp received none good argument!");
 
     state->setIp(address.getValue());
+}
+
+void vm2::InstructionSet::op_jless(vm2::State *state) {
+    StackObject address = state->getStack().pop();
+    StackObject flag = state->getStack().pop();
+
+    if(!address.isGood() || !flag.isGood())
+        throw std::runtime_error("jmp received none good argument!");
+
+    if(flag.getValue() == 1)
+        state->setIp(address.getValue());
+    else
+        state->iterateIp();
 }
 
 ///

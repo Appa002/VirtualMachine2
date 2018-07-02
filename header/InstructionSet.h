@@ -53,6 +53,7 @@ namespace vm2{
         static void op_fcmp(State* state);
 
         static void op_jmp(State* state);
+        static void op_jless(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);
