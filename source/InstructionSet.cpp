@@ -51,6 +51,7 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x01, new Instruction(op_jmp)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x02, new Instruction(op_jless)));
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x03, new Instruction(op_jgreater)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x04, new Instruction(op_jequal)));
 
 }
 
@@ -307,6 +308,20 @@ void vm2::InstructionSet::op_jgreater(vm2::State *state) {
         state->setIp(address.getValue());
     else
         state->iterateIp();
+}
+
+void vm2::InstructionSet::op_jequal(vm2::State *state) {
+    StackObject address = state->getStack().pop();
+    StackObject flag = state->getStack().pop();
+
+    if(!address.isGood() || !flag.isGood())
+        throw std::runtime_error("jless received none good argument!");
+
+    if(flag.getValue() == 0)
+        state->setIp(address.getValue());
+    else
+        state->iterateIp();
+
 }
 
 ///
