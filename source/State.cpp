@@ -58,7 +58,7 @@ void vm2::State::iterateIp(size_t amount) {
 }
 
 void vm2::State::setIp(size_t index) {
-    if(byteCode.size() < index)
+    if(index < byteCode.size())
         ip = &byteCode[index];
     else
         throw std::runtime_error("New instruction pointer location out of range");
