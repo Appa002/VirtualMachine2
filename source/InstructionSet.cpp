@@ -259,8 +259,8 @@ void vm2::InstructionSet::op_scmp(vm2::State *state) {
             flag = 2; // if yes => arg1 > arg2
         else // the subtraction yielded a negative number
             flag = 1; // => arg1 < arg2
+        state->getStack().push(flag, 0xef);
     }
-    state->getStack().push(flag, 0xef);
     state->iterateIp();
 }
 
