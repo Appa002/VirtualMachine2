@@ -59,6 +59,7 @@ namespace vm2{
         static void op_jNequal(State* state);
 
         static void op_call(State* state);
+        static void op_return(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);

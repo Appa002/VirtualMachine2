@@ -55,6 +55,7 @@ vm2::InstructionSet::InstructionSet() {
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x05, new Instruction(op_jNequal)));
 
     instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x06, new Instruction(op_call)));
+    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x07, new Instruction(op_return)));
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -348,6 +349,18 @@ void vm2::InstructionSet::op_call(vm2::State *state) {
     uint32_t myAddress = state->getIpIndex();
     state->getStack().push(myAddress, 0x06);
     state->setIp(address.getValue());
+}
+
+void vm2::InstructionSet::op_return(vm2::State *state) {
+    uint32_t i = 1;
+    StackObject obj;
+    while(true){
+        obj = state->getStack().peek(i);
+        if(obj.getOpcode() == 0x06 && obj.isGood())
+            break;
+        i++;
+   }
+   state->setIp(obj.getValue());
 }
 
 ///

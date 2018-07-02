@@ -725,6 +725,20 @@ int unit_call(){
     return 0;
 }
 
+int unit_return(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 7, 0x06, 0x11, 0x07});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->readIp(), 0x06);
+
+    delete(state);
+    return 0;
+}
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -755,6 +769,7 @@ int main(){
     register_test(unit_jequal);
     register_test(unit_jNequal);
     register_test(unit_call);
+    register_test(unit_return);
 
     start_unit_test();
     end_unit_test();
