@@ -54,6 +54,7 @@ namespace vm2{
 
         static void op_jmp(State* state);
         static void op_jless(State* state);
+        static void op_jgreater(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);
