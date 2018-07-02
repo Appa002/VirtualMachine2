@@ -5,6 +5,8 @@
 #include "../header/Stack.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <stdexcept>
 
 vm2::Stack::Stack() {
     data = new std::vector<StackObject>();
@@ -30,8 +32,10 @@ vm2::StackObject vm2::Stack::pop() {
     return object;
 }
 
-vm2::StackObject vm2::Stack::peek() {
-    return data->at(data->size() - 1);
+vm2::StackObject vm2::Stack::peek(uint32_t offset) {
+    if(offset < data->size() || ((int)data->size() - (int)offset) < 0)
+        throw std::runtime_error("Peeking at incorrect offset");
+    return data->at(data->size() - offset);
 }
 
 
