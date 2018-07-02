@@ -138,7 +138,7 @@
 		\hex 07 & return & Looks through the stack, top to bottom, and jumps to the address which was put there by a previous \textit{call} instruction. \\
 		\hline
 		\hline
-		\hex 10 & int & Triggers the interrupt specified by its first argument.\footnote{See \hyperref[interrupts]{Section \ref*{interrupts}}} \\
+		\hex 10 & int & Triggers the interrupt specified by its first argument.\footnote{See \hyperref[interrupts]{Section \ref*{interrupts}}}\,\footnote{It is not sure which, if any, interrupts will exist.} \\
 		\hline
 		\hex 11 & halt & Stops the vm. \\
 		\hline
