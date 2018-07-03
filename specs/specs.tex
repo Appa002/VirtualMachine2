@@ -46,24 +46,24 @@
 		
 		\item[Instruction] An \textit{instruction} shall be callable, and modify the state of the vm, when called.
 			
-		\item[Byte Code] The \textit{byte code} is an array of 8bit numbers which refer to instructions or static \textit{values}\footnote{4 8bit values are read and sticked together to build one 32bit number.}.	
+		\item[ByteCode] The \textit{bytecode} is an array of 8bit numbers which refer to instructions or static \textit{values}\footnote{4 8bit values are read and sticked together to build one 32bit number.}.	
 		
 		\item[Opcode] An \textit{opcode} is a 8bit number\footnote{Usually represented in hex.}, which uniquely defines an \textit{instruction}.
 		
  		\item[Argument]A \textit{argument} shall be a \textit{value} which is stored on the \textit{stack} and gets poped by an instruction.\footnote{We say the poped \textit{value} is the \textit{argument} of the instruction poping it.}
  		
-		\item[Instruction Pointer] The \textit{instruction pointer} is a pointer which points into the \textit{byte code}. 		
+		\item[Instruction Pointer] The \textit{instruction pointer} is a pointer which points into the \textit{bytecode}. 		
  		
 
 	\end{description}
 	\section{High Level Function}
 	\label{high_level_function}	
 	
-	The vm keeps track of the Instruction Pointer (IP). The IP points into the byte code starting at the first byte. The vm functions in a loop, executing the instruction which is defined by the opcode, to which the IP is currently pointing. Every instruction may or may not modify the state of the vm, but must always modify the ip. The vm stops executing when the ip points to the instruction \hex 11.
+	The vm keeps track of the Instruction Pointer (IP). The IP points into the bytecode starting at the first byte. The vm functions in a loop, executing the instruction which is defined by the opcode, to which the IP is currently pointing. Every instruction may or may not modify the state of the vm, but must always modify the ip. The vm stops executing when the ip points to the instruction \hex 11.
 	
 	\section{Technical notes}
 	\label{technical_notes}	
-	Every instruction is defined to be one byte in size. The signage and type of a value is interpreted by the instruction to which it is being passed.\footnote{E.g. some instructions might interpret a value as an float or as an signed/unsigned integer} The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
+	Every instruction is defined to be one byte in size. The signage and type of a value is interpreted by the instruction to which it is being passed.\footnote{E.g. some instructions might interpret a value as n float or as a signed/unsigned integer} The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
 	
 	\newpage
 	\section{Instruction Set}
@@ -78,17 +78,16 @@
 		\hex b0...\hex b9 & setRegister0...setRegister9 & Writes one argument to the given register. \\
 		\hline
 		\hline
-		\hex c0 & setSize & Takes one argument which sets by how many addresses the linear memory gets expanded when calling \hex c3 (alloc)\footnote{Addresses are 32bit in size, there for if you where to set this value to 32 you would, every time you call alloc, increase the linear memory by 1024bit (1 Kibibit).}. \textsc{You can call this instruction exactly ones.} \\
+		\hex c0 & setSize & Takes one argument which sets by how many addresses the linear memory gets expanded when calling \hex c3 (alloc)\footnote{Addresses are 32bit in size, therefore if you were to set this value to 32 you would, every time you call alloc, increase the linear memory by 1024bit (1 Kibibit).}. \textsc{You can call this instruction exactly ones.} \\
 		\hline
 		\hex c1 & move & Writes its first argument to an address, which is given by the second argument, into linear memory. \\
 		\hline		
 		\hex c2 & read & Pushes the value, specified by the address given as first argument, from linear memory onto the stack. \\
 		\hline
-		\hex c3 & alloc & Expands the writeable address range in the linear memory by the size that was set with the instruction \hex c0 a.k.a. setSize.\footnote{If you want to write to linear memory you have to call this instruction atleast ones, otherwise
-there would be no address to which you cloud write.}\\
+		\hex c3 & alloc & Expands the writeable address range in the linear memory by the size that was set with the instruction \hex c0 a.k.a. setSize.\footnote{If you want to write to linear memory you have to call this instruction at least ones; there would be no address to which you cloud write to otherwise.}\\
 		\hline	
 		\hline	
-		\hex d0 & push & Pushes a value, specified by the next 4 bytes in the byte code, onto the stack. \\
+		\hex d0 & push & Pushes a value, specified by the next 4 bytes in the bytecode, onto the stack. \\
 		\hline		
 		\hex d1 & remove & Removes a value from the stack. \\
 		\hline	
@@ -138,7 +137,7 @@ there would be no address to which you cloud write.}\\
 		\hline
 		\hex 05 & jNequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\(\neq \)arg2 (Arguments of \textit{cmp}). \\
 		\hline
-		\hex 06 & call & Sets the ip to the address specified in its first argument and pushes the address of this instruction in the byte code onto the stack. \\
+		\hex 06 & call & Sets the ip to the address specified in its first argument and pushes the address of this instruction in the bytecode onto the stack. \\
 		\hline
 		\hex 07 & return & Looks through the stack, top to bottom, and jumps to the address which was put there by a previous \textit{call} instruction. \\
 		\hline
