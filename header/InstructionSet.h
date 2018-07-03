@@ -22,7 +22,7 @@ namespace vm2{
         /* The size of the array needs be 0xf1, because instructions will be stored so that
          * instructions opcode == index in the array.
          * This makes sure that every opcode look up happens in O(1) time, but wastes quit a bit of memory.
-         * (wastes ~6,5 mb assuming 32bit pointer, and wastes ~13mb assuming 64bit ptr.)*/
+         * (wastes ~6,5kib assuming 32bit pointer, and wastes ~13kib assuming 64bit ptr.)*/
         std::array<vm2::IInstruction*, 0xf1> instructionMapArray;
 
     private:
