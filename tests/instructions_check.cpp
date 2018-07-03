@@ -92,25 +92,31 @@ int unit_remove(){
 }
 
 int unit_move(){
-    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 3, 0xd0, 0, 0, 0, 0, 0xc0, 0x11});
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 3, 0xd0, 0, 0, 0, 0, 0xc1, 0x11});
     InstructionSet instructionSet = InstructionSet();
 
     State* state = new vm2::State(code);
+    state->getLinearMemory().setPageSize(10);
+    state->getLinearMemory().allocPage();
+
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->readMemory(0), 3);
+    ASSERT_EQUAL(state->getLinearMemory().read(0), 3);
     ASSERT_EQUAL(state->readIp(), 0x11);
     return 0;
 }
 
 int unit_read(){
-    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 0, 0xc1, 0x11});
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 0, 0xc2, 0x11});
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->writeMemory(0, 3);
+    state->getLinearMemory().setPageSize(10);
+    state->getLinearMemory().allocPage();
+    state->getLinearMemory().write(0, 3);
+
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
     ASSERT_EQUAL(state->getStack().peek().isGood(), true);
@@ -753,7 +759,7 @@ int unit_nop(){
     instructionSet.get(state->readIp())->call(state);
 
     ASSERT_EQUAL(state->readIp(), 0x11);
-
+    delete state;
     return 0;
 }
 
@@ -834,7 +840,8 @@ int main(){
     register_test(unit_return);
     register_test(unit_int);
     register_test(unit_nop);
+    register_test(unit_setSize);
+    register_test(unit_alloc);
 
     start_unit_test();
-    end_unit_test();
 }
