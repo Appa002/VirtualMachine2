@@ -27,8 +27,11 @@ namespace vm2{
 
     private:
         /// Instructions
+        static void op_setSize(State* state);
         static void op_move(State* state);
         static void op_read(State* state);
+        static void op_alloc(State* state);
+
         static void op_push(State* state);
         static void op_remove(State* state);
 

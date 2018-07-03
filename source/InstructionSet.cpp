@@ -21,8 +21,10 @@ vm2::InstructionSet::InstructionSet() {
         instructionMapArray.at(0xb0 + i) = new vm2::SetNthRegisterInstruction(i);
     }
 
+    instructionMapArray.at(0xc0) = new Instruction(op_setSize);
     instructionMapArray.at(0xc1) = new Instruction(op_move);
     instructionMapArray.at(0xc2) = new Instruction(op_read);
+    instructionMapArray.at(0xc3) = new Instruction(op_alloc);
 
     instructionMapArray.at(0xd0) = new Instruction(op_push);
     instructionMapArray.at(0xd1) = new Instruction(op_remove);
@@ -78,6 +80,15 @@ vm2::IInstruction* vm2::InstructionSet::get(uint8_t opt) {
 
 /// Instructions
 
+void vm2::InstructionSet::op_setSize(vm2::State *state) {
+    StackObject argument = state->getStack().pop();
+    if(!argument.isGood())
+        throw std::runtime_error("setSize called with none good argument!");
+
+    state->getLinearMemory().setPageSize(argument.getValue());
+    state->iterateIp();
+}
+
 void vm2::InstructionSet::op_push(vm2::State *state) {
     uint32_t value = 0;
     value = value | (state->peekIp(1) << 24);
@@ -113,6 +124,12 @@ void vm2::InstructionSet::op_read(vm2::State *state) {
     state->getStack().push(readValue, 0xc1);
     state->iterateIp();
 }
+
+void vm2::InstructionSet::op_alloc(vm2::State *state) {
+    state->getLinearMemory().allocPage();
+    state->iterateIp();
+}
+
 
 void vm2::InstructionSet::op_uadd(vm2::State *state) {
     StackObject a = state->getStack().pop();
