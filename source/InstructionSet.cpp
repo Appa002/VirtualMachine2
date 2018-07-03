@@ -9,68 +9,71 @@
 
 
 vm2::InstructionSet::InstructionSet() {
+    instructionMapArray.fill(nullptr);
+
     // Register readRegister0...readRegister9 instruction
     for(uint8_t i = 0; i < 10; i++){
-        instructionMap.operator[]((uint8_t)0xa0 + i) = new vm2::ReadNthRegisterInstruction(i);
+        instructionMapArray.at(0xa0 + i) = new vm2::ReadNthRegisterInstruction(i);
     }
 
     // Register setRegister0...setRegister9 instruction
     for(uint8_t i = 0; i < 10; i++){
-        instructionMap.operator[]((uint8_t)0xb0 + i) = new vm2::SetNthRegisterInstruction(i);
+        instructionMapArray.at(0xb0 + i) = new vm2::SetNthRegisterInstruction(i);
     }
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc0, new Instruction(op_move)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xc1, new Instruction(op_read)));
+    instructionMapArray.at(0xc0) = new Instruction(op_move);
+    instructionMapArray.at(0xc1) = new Instruction(op_read);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd0, new Instruction(op_push)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xd1, new Instruction(op_remove)));
+    instructionMapArray.at(0xd0) = new Instruction(op_push);
+    instructionMapArray.at(0xd1) = new Instruction(op_remove);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe0, new Instruction(op_uadd)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe1, new Instruction(op_sadd)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe2, new Instruction(op_fadd)));
+    instructionMapArray.at(0xe0) = new Instruction(op_uadd);
+    instructionMapArray.at(0xe1) = new Instruction(op_sadd);
+    instructionMapArray.at(0xe2) = new Instruction(op_fadd);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe3, new Instruction(op_usub)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe4, new Instruction(op_ssub)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe5, new Instruction(op_fsub)));
+    instructionMapArray.at(0xe3) = new Instruction(op_usub);
+    instructionMapArray.at(0xe4) = new Instruction(op_ssub);
+    instructionMapArray.at(0xe5) = new Instruction(op_fsub);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe6, new Instruction(op_umult)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe7, new Instruction(op_smult)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe8, new Instruction(op_fmult)));
+    instructionMapArray.at(0xe6) = new Instruction(op_umult);
+    instructionMapArray.at(0xe7) = new Instruction(op_smult);
+    instructionMapArray.at(0xe8) = new Instruction(op_fmult);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xe9, new Instruction(op_udiv)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xea, new Instruction(op_sdiv)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xeb, new Instruction(op_fdiv)));
+    instructionMapArray.at(0xe9) = new Instruction(op_udiv);
+    instructionMapArray.at(0xea) = new Instruction(op_sdiv);
+    instructionMapArray.at(0xeb) = new Instruction(op_fdiv);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xec, new Instruction(op_tof)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xed, new Instruction(op_abs)));
+    instructionMapArray.at(0xec) = new Instruction(op_tof);
+    instructionMapArray.at(0xed) = new Instruction(op_abs);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xee, new Instruction(op_ucmp)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xef, new Instruction(op_scmp)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0xf0, new Instruction(op_fcmp)));
+    instructionMapArray.at(0xee) = new Instruction(op_ucmp);
+    instructionMapArray.at(0xef) = new Instruction(op_scmp);
+    instructionMapArray.at(0xf0) = new Instruction(op_fcmp);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x01, new Instruction(op_jmp)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x02, new Instruction(op_jless)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x03, new Instruction(op_jgreater)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x04, new Instruction(op_jequal)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x05, new Instruction(op_jNequal)));
+    instructionMapArray.at(0x01) = new Instruction(op_jmp);
+    instructionMapArray.at(0x02) = new Instruction(op_jless);
+    instructionMapArray.at(0x03) = new Instruction(op_jgreater);
+    instructionMapArray.at(0x04) = new Instruction(op_jequal);
+    instructionMapArray.at(0x05) = new Instruction(op_jNequal);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x06, new Instruction(op_call)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x07, new Instruction(op_return)));
+    instructionMapArray.at(0x06) = new Instruction(op_call);
+    instructionMapArray.at(0x07) = new Instruction(op_return);
 
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x10, new Instruction(op_int)));
-    instructionMap.insert(std::pair<uint8_t, vm2::Instruction*>(0x12, new Instruction(op_nop)));
+    instructionMapArray.at(0x10) = new Instruction(op_int);
+    instructionMapArray.at(0x12) = new Instruction(op_nop);
 }
 
 vm2::InstructionSet::~InstructionSet() {
-    for(auto& it : this->instructionMap){
-        delete it.second;
+    for(auto it : this->instructionMapArray){
+        if(it != nullptr)
+            delete it;
     }
 }
 
 vm2::IInstruction* vm2::InstructionSet::get(uint8_t opt) {
-    if(instructionMap.find(opt) == instructionMap.cend())
+    if(instructionMapArray.at(opt) == nullptr)
         throw std::runtime_error("Unknown opt code");
-    return instructionMap.at(opt);
+    return instructionMapArray.at(opt);
 }
 
 /// Instructions

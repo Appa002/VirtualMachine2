@@ -7,8 +7,7 @@
 
 
 #include <cstdint>
-#include <unordered_map>
-#include <functional>
+#include <array>
 
 #include "State.h"
 #include "Instruction.h"
@@ -20,14 +19,18 @@ namespace vm2{
         InstructionSet();
         ~InstructionSet();
     private:
-        std::unordered_map<uint8_t, vm2::IInstruction*> instructionMap;
+        /* The size of the array needs be 0xf1, because instructions will be stored so that
+         * instructions opcode == index in the array.
+         * This makes sure that every opcode look up happens in O(1) time, but wastes quit a bit of memory.
+         * (wastes ~6,5 mb assuming 32bit pointer, and wastes ~13mb assuming 64bit ptr.)*/
+        std::array<vm2::IInstruction*, 0xf1> instructionMapArray;
 
     private:
         /// Instructions
         static void op_move(State* state);
         static void op_read(State* state);
-        static void op_push (State* state);
-        static void op_remove (State* state);
+        static void op_push(State* state);
+        static void op_remove(State* state);
 
         static void op_uadd(State* state);
         static void op_sadd(State* state);
