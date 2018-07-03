@@ -40,8 +40,8 @@ namespace vm2{
         void setRegister(size_t number, uint32_t value);
         uint32_t readRegister(size_t number);
 
-        Stack getStack();
-        LinearMemory getLinearMemory();
+        Stack& getStack();
+        LinearMemory& getLinearMemory();
     };
 }
 

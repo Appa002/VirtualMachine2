@@ -81,7 +81,7 @@ uint32_t vm2::State::readRegister(size_t number) {
         throw std::runtime_error("Registers are numbered from to 0...9");
 }
 
-vm2::Stack vm2::State::getStack() {
+vm2::Stack& vm2::State::getStack() {
     return stack;
 }
 
@@ -89,7 +89,7 @@ uint32_t vm2::State::getIpIndex() {
     return static_cast<uint32_t>(ip - &byteCode[0]);
 }
 
-vm2::LinearMemory vm2::State::getLinearMemory() {
+vm2::LinearMemory& vm2::State::getLinearMemory() {
     return linearMemory;
 }
 
