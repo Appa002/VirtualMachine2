@@ -6,7 +6,7 @@
 #include "../header/Page.h"
 
 vm2::Page::Page(unsigned long size_) {
-    data = new uint32_t[size];
+    data = new uint32_t[size_];
     pageSize = size_;
 }
 
