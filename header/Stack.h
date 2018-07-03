@@ -14,7 +14,7 @@ namespace vm2{
     class Stack {
     public:
         Stack();
-        ~Stack() = default;
+        ~Stack();
 
     private:
         std::vector<vm2::StackObject>* data;

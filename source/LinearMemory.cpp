@@ -11,6 +11,13 @@ vm2::LinearMemory::LinearMemory() {
     pages = new std::vector<Page *>;
 }
 
+vm2::LinearMemory::~LinearMemory() {
+    for(auto& page : *pages){
+        delete page;
+    }
+    delete pages;
+}
+
 void vm2::LinearMemory::setPageSize(uint32_t newSize) {
     if (this->pageSize != 0)
         throw std::runtime_error("The size of linear memory pages may only be set one time!");
@@ -49,5 +56,4 @@ uint32_t vm2::LinearMemory::read(uint32_t address) {
 uint32_t vm2::LinearMemory::getPageSize() {
     return pageSize;
 }
-
 

@@ -9,10 +9,13 @@
 #include <stdexcept>
 
 vm2::Stack::Stack() {
-    data = new std::vector<StackObject>();
-    data->reserve(1024 / 4);
-    std::fill(data->begin(), data->begin() + 1024 / 4, StackObject());
+    data = new std::vector<StackObject>;
 }
+
+vm2::Stack::~Stack() {
+   delete data;
+}
+
 
 void vm2::Stack::push(uint32_t value, uint8_t opcode) {
     data->push_back(StackObject(value, opcode));

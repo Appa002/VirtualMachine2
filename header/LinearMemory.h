@@ -13,7 +13,7 @@ namespace vm2{
     class LinearMemory {
     public:
         LinearMemory();
-        ~LinearMemory() = default;
+        ~LinearMemory();
 
     private:
         uint32_t pageSize;

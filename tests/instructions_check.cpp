@@ -2,6 +2,7 @@
 // Created by a_mod on 26.06.2018.
 //
 
+#include <iostream>
 #include "unit_framework.h"
 
 #include "../header/State.h"
@@ -18,17 +19,17 @@ int unit_readRegisterN(){
         InstructionSet instructionSet = InstructionSet();
 
         instructionSet.get(state->readIp())->call(state); // push
-        ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-        ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+        ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+        ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
 
         instructionSet.get(state->readIp())->call(state); // set register i
         ASSERT_EQUAL(state->readRegister(i), 3);
         ASSERT_EQUAL(state->readIp(), readOpcode); // did set register i iterate the ip?
 
         instructionSet.get(state->readIp())->call(state); // read register i
-        ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-        ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-        ASSERT_EQUAL(state->getStack().peek().getOpcode(), readOpcode);
+        ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+        ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
+        ASSERT_EQUAL(state->getStack()->peek().getOpcode(), readOpcode);
 
         ASSERT_EQUAL(state->readIp(), 0x11);
         delete state;
@@ -44,9 +45,9 @@ int unit_setRegisterN(){
         InstructionSet instructionSet = InstructionSet();
 
         instructionSet.get(state->readIp())->call(state); // push
-        ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-        ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-        ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd0);
+        ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+        ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
+        ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xd0);
 
         instructionSet.get(state->readIp())->call(state); // set register i
         ASSERT_EQUAL(state->readRegister(i), 3);
@@ -66,9 +67,9 @@ int unit_push(){
     instructionSet.get(code[0])->call(state);
 
     ASSERT_EQUAL(state->readIp(), 0x11);
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2155905027);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xd0);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2155905027);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xd0);
 
     delete(state);
     return 0;
@@ -84,8 +85,8 @@ int unit_remove(){
     instructionSet.get(state->readIp())->call(state);
 
     ASSERT_EQUAL(state->readIp(), 0x11);
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().pop().getValue(), 3);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->pop().getValue(), 3);
 
     delete(state);
     return 0;
@@ -96,15 +97,16 @@ int unit_move(){
     InstructionSet instructionSet = InstructionSet();
 
     State* state = new vm2::State(code);
-    state->getLinearMemory().setPageSize(10);
-    state->getLinearMemory().allocPage();
+    state->getLinearMemory()->setPageSize(10);
+    state->getLinearMemory()->allocPage();
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getLinearMemory().read(0), 3);
+    ASSERT_EQUAL(state->getLinearMemory()->read(0), 3);
     ASSERT_EQUAL(state->readIp(), 0x11);
+    delete state;
     return 0;
 }
 
@@ -113,14 +115,14 @@ int unit_read(){
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->getLinearMemory().setPageSize(10);
-    state->getLinearMemory().allocPage();
-    state->getLinearMemory().write(0, 3);
+    state->getLinearMemory()->setPageSize(10);
+    state->getLinearMemory()->allocPage();
+    state->getLinearMemory()->write(0, 3);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
     return 0;
@@ -135,8 +137,8 @@ int unit_uadd(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 5);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
     return 0;
@@ -151,9 +153,9 @@ int unit_sadd(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe1);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe1);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -164,10 +166,11 @@ int unit_sadd(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0x80000003);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe1);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0x80000003);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe1);
     ASSERT_EQUAL(state->readIp(), 0x11);
+    delete(state);
 
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 5, 0xd0, 0, 0, 0, 2, 0xe1, 0x11});
     state = new vm2::State(code);
@@ -176,9 +179,9 @@ int unit_sadd(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 7);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe1);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 7);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe1);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -198,9 +201,9 @@ int unit_usub() {
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe3);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe3);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
     return 0;
@@ -215,9 +218,9 @@ int unit_ssub() {
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 3);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe4);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 3);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe4);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -228,9 +231,9 @@ int unit_ssub() {
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0x80000007);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe4);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0x80000007);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe4);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -241,9 +244,9 @@ int unit_ssub() {
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0x80000003);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe4);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0x80000003);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe4);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -264,9 +267,9 @@ int unit_umult(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 10);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe6);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 10);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe6);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -283,9 +286,9 @@ int unit_smult(){
     instructionSet.get(state->readIp())->call(state);
 
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0x8000000A);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe7);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0x8000000A);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe7);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -296,9 +299,9 @@ int unit_smult(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 10);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe7);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 10);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe7);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -310,9 +313,9 @@ int unit_smult(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 10);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe7);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 10);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe7);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -334,9 +337,9 @@ int unit_udiv(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xe9);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xe9);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -352,9 +355,9 @@ int unit_sdiv(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xea);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xea);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -366,9 +369,9 @@ int unit_sdiv(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0x80000002);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xea);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0x80000002);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xea);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -379,9 +382,9 @@ int unit_sdiv(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xea);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xea);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -406,9 +409,9 @@ int unit_abs(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xed);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 5);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xed);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete state;
 
@@ -418,9 +421,9 @@ int unit_abs(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xed);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 5);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xed);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -436,9 +439,9 @@ int unit_ucmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xee);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xee);
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete(state);
@@ -450,9 +453,9 @@ int unit_ucmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 1);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xee);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 1);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xee);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -463,9 +466,9 @@ int unit_ucmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xee);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xee);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -481,9 +484,9 @@ int unit_scmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xef);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -494,9 +497,9 @@ int unit_scmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 0);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xef);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -507,9 +510,9 @@ int unit_scmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 1);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 1);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xef);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -520,9 +523,9 @@ int unit_scmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xef);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -533,9 +536,9 @@ int unit_scmp(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 2);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0xef);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 2);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xef);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete(state);
 
@@ -567,7 +570,7 @@ int unit_jless(){
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->getStack().push(0, 0x00);
+    state->getStack()->push(0, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -578,7 +581,7 @@ int unit_jless(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x02, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(2, 0x00);
+    state->getStack()->push(2, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -589,7 +592,7 @@ int unit_jless(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x02, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(1, 0x00);
+    state->getStack()->push(1, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -605,7 +608,7 @@ int unit_jgreater(){
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->getStack().push(0, 0x00);
+    state->getStack()->push(0, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -616,7 +619,7 @@ int unit_jgreater(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x03, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(2, 0x00);
+    state->getStack()->push(2, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -627,7 +630,7 @@ int unit_jgreater(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x03, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(1, 0x00);
+    state->getStack()->push(1, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -643,7 +646,7 @@ int unit_jequal(){
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->getStack().push(0, 0x00);
+    state->getStack()->push(0, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -654,7 +657,7 @@ int unit_jequal(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x04, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(2, 0x00);
+    state->getStack()->push(2, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -665,7 +668,7 @@ int unit_jequal(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x04, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(1, 0x00);
+    state->getStack()->push(1, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -681,7 +684,7 @@ int unit_jNequal(){
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->getStack().push(0, 0x00);
+    state->getStack()->push(0, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -692,7 +695,7 @@ int unit_jNequal(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x05, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(2, 0x00);
+    state->getStack()->push(2, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -703,7 +706,7 @@ int unit_jNequal(){
     code = std::vector<uint8_t> ({0xd0, 0, 0, 0, 7, 0x05, 0x11, 'x'});
     state = new vm2::State(code);
 
-    state->getStack().push(1, 0x00);
+    state->getStack()->push(1, 0x00);
 
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
@@ -722,9 +725,9 @@ int unit_call(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getStack().peek().isGood(), true);
-    ASSERT_EQUAL(state->getStack().peek().getValue(), 5);
-    ASSERT_EQUAL(state->getStack().peek().getOpcode(), 0x06);
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 5);
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0x06);
     ASSERT_EQUAL(state->readIp(), 'x');
 
     delete(state);
@@ -771,7 +774,7 @@ int unit_setSize(){
     instructionSet.get(state->readIp())->call(state);
     instructionSet.get(state->readIp())->call(state);
 
-    ASSERT_EQUAL(state->getLinearMemory().getPageSize(), 5);
+    ASSERT_EQUAL(state->getLinearMemory()->getPageSize(), 5);
     ASSERT_EQUAL(state->readIp(), 0x11);
     delete state;
     return 0;
@@ -785,18 +788,18 @@ int unit_alloc(){
     bool errorTriggered = false;
 
     try {
-        state->getLinearMemory().write(10, 5);
+        state->getLinearMemory()->write(10, 5);
     }catch (...){
         errorTriggered = true;
     }
     ASSERT_EQUAL(errorTriggered, true);
 
-    state->getLinearMemory().setPageSize(10);
+    state->getLinearMemory()->setPageSize(10);
     instructionSet.get(state->readIp())->call(state);
 
     errorTriggered = false;
     try {
-        state->getLinearMemory().write(5, 5);
+        state->getLinearMemory()->write(5, 5);
     }catch (std::runtime_error& err){
         errorTriggered = true;
     }

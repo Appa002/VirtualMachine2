@@ -10,7 +10,8 @@
 vm2::State::State(std::string filePath) {
     loadFile(filePath);
     ip = &(byteCode[0]);
-    stack = Stack();
+    stack = new Stack();
+    linearMemory = new LinearMemory();
     registers.reserve(10);
 }
 
@@ -18,8 +19,14 @@ vm2::State::State(std::string filePath) {
 vm2::State::State(std::vector<uint8_t> code) {
     byteCode = code;
     ip = &(byteCode[0]);
-    stack = Stack();
+    stack = new Stack();
+    linearMemory = new LinearMemory();
     registers.reserve(10);
+}
+
+vm2::State::~State() {
+    delete stack;
+    delete linearMemory;
 }
 
 
@@ -81,7 +88,7 @@ uint32_t vm2::State::readRegister(size_t number) {
         throw std::runtime_error("Registers are numbered from to 0...9");
 }
 
-vm2::Stack& vm2::State::getStack() {
+vm2::Stack* vm2::State::getStack() {
     return stack;
 }
 
@@ -89,9 +96,8 @@ uint32_t vm2::State::getIpIndex() {
     return static_cast<uint32_t>(ip - &byteCode[0]);
 }
 
-vm2::LinearMemory& vm2::State::getLinearMemory() {
+vm2::LinearMemory* vm2::State::getLinearMemory() {
     return linearMemory;
 }
-
 
 
