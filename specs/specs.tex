@@ -78,9 +78,14 @@
 		\hex b0...\hex b9 & setRegister0...setRegister9 & Writes one argument to the given register. \\
 		\hline
 		\hline
-		\hex c0 & move & Writes its first argument to an address, which is given by the second argument, into linear memory. \\
+		\hex c0 & setSize & Takes one argument which sets by how many address the linear memory gets expanded when calling \hex c3 (alloc)\footnote{Addresses are 32bit in size, there for if you where to set this value to 32 you would, every time you call alloc, increase the linear memory by 1024bit (1 Kibibit).}. \textsc{You can call this instruction exactly ones.} \\
+		\hline
+		\hex c1 & move & Writes its first argument to an address, which is given by the second argument, into linear memory. \\
 		\hline		
-		\hex c1 & read & Pushes the value, specified by the address given as first argument, from linear memory onto the stack. \\
+		\hex c2 & read & Pushes the value, specified by the address given as first argument, from linear memory onto the stack. \\
+		\hline
+		\hex c3 & alloc & Expands the writeable address range in the linear memory by the size that was set with the instruction \hex c0 a.k.a. setSize.\footnote{If you want to write to linear memory you have to call this instruction atleast ones, otherwise
+there would be no address to which you cloud write.}\\
 		\hline	
 		\hline	
 		\hex d0 & push & Pushes a value, specified by the next 4 bytes in the byte code, onto the stack. \\
