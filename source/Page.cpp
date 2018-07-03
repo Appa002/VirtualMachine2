@@ -5,14 +5,9 @@
 #include <stdexcept>
 #include "../header/Page.h"
 
-vm2::Page::Page() {
-    data = new uint32_t[1024/4];
-    pageSize = 1024/4;
-}
-
 vm2::Page::Page(unsigned long size_) {
-    data = new uint32_t[size_/4];
-    pageSize = size_ / 4;
+    data = new uint32_t[size];
+    pageSize = size_;
 }
 
 vm2::Page::~Page() {
@@ -20,12 +15,10 @@ vm2::Page::~Page() {
     pageSize = 0;
 }
 
-int vm2::Page::writeTo(unsigned long index, uint32_t content) {
-    if(index < pageSize)
-        data[index] = content;
-    else
-        return -1;
-    return 0;
+void vm2::Page::writeTo(unsigned long index, uint32_t content) {
+    if(index >= pageSize)
+        throw std::runtime_error("The index to write to does not exist on this page.");
+    data[index] = content;
 }
 
 uint32_t vm2::Page::readFrom(unsigned long index) {

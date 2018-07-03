@@ -10,8 +10,8 @@
 namespace vm2{
     class Page {
     public:
-        Page();
-        explicit Page(unsigned long sizeInByte_);
+        Page() = delete;
+        explicit Page(unsigned long size_);
         ~Page();
 
     private:
@@ -19,7 +19,7 @@ namespace vm2{
         unsigned long pageSize;
 
     public:
-        int writeTo(unsigned long index, uint32_t content);
+        void writeTo(unsigned long index, uint32_t content);
         uint32_t readFrom(unsigned long index);
         unsigned long size();
     };

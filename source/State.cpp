@@ -12,9 +12,6 @@ vm2::State::State(std::string filePath) {
     ip = &(byteCode[0]);
     stack = Stack();
     registers.reserve(10);
-    linearMemory.reserve(5);
-
-    linearMemory.push_back(new Page());
 }
 
 
@@ -23,11 +20,7 @@ vm2::State::State(std::vector<uint8_t> code) {
     ip = &(byteCode[0]);
     stack = Stack();
     registers.reserve(10);
-    linearMemory.reserve(5);
-
-    linearMemory.push_back(new Page());
 }
-
 
 
 void vm2::State::loadFile(std::string &filePath) {
@@ -88,46 +81,16 @@ uint32_t vm2::State::readRegister(size_t number) {
         throw std::runtime_error("Registers are numbered from to 0...9");
 }
 
-void vm2::State::writeMemory(size_t address, uint32_t value) {
-    size_t pagesCombinedSize = 0;
-    size_t bytesInPreviousPages = 0;
-    for(auto& page : linearMemory){
-        pagesCombinedSize += page->size();
-        if(address < pagesCombinedSize){
-            page->writeTo(address - bytesInPreviousPages, value);
-            return;
-        }
-        bytesInPreviousPages += page->size();
-    }
-
-    linearMemory.push_back(
-            new Page(linearMemory.at(linearMemory.size() - 1)->size() * 2));
-    writeMemory(address, value);
-}
-
-uint32_t vm2::State::readMemory(size_t address) {
-    size_t pagesCombinedSize = 0;
-    size_t bytesInPreviousPages = 0;
-    for(auto& page : linearMemory){
-        pagesCombinedSize += page->size();
-        if(address < pagesCombinedSize)
-            return page->readFrom(address - bytesInPreviousPages);
-        bytesInPreviousPages += page->size();
-    }
-}
-
 vm2::Stack vm2::State::getStack() {
     return stack;
 }
 
-vm2::State::~State() {
-    for(auto* it : this->linearMemory){
-        delete it;
-    }
-}
-
 uint32_t vm2::State::getIpIndex() {
     return static_cast<uint32_t>(ip - &byteCode[0]);
+}
+
+vm2::LinearMemory vm2::State::getLinearMemory() {
+    return linearMemory;
 }
 
 

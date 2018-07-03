@@ -11,6 +11,7 @@
 
 #include "Page.h"
 #include "Stack.h"
+#include "LinearMemory.h"
 
 namespace vm2{
     class State {
@@ -18,14 +19,13 @@ namespace vm2{
         State() = delete;
         explicit State(std::string filePath);
         explicit State(std::vector<uint8_t> code);
-        ~State();
 
     private:
         uint8_t* ip;
         std::vector<uint8_t> byteCode;
         std::vector<uint32_t> registers;
         Stack stack;
-        std::vector<Page*> linearMemory;
+        LinearMemory linearMemory;
 
     private:
         void loadFile(std::string& filePath);
@@ -40,10 +40,8 @@ namespace vm2{
         void setRegister(size_t number, uint32_t value);
         uint32_t readRegister(size_t number);
 
-        void writeMemory(size_t address, uint32_t value);
-        uint32_t readMemory(size_t address);
-
         Stack getStack();
+        LinearMemory getLinearMemory();
     };
 }
 

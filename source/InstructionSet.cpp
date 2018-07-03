@@ -100,7 +100,7 @@ void vm2::InstructionSet::op_move(vm2::State *state) {
     if(!valueArgument.isGood() || !addressArgument.isGood())
         throw std::runtime_error("Move has received an none good argument.");
 
-    state->writeMemory(addressArgument.getValue(), valueArgument.getValue());
+    state->getLinearMemory().write(addressArgument.getValue(), valueArgument.getValue());
     state->iterateIp();
 }
 
@@ -108,7 +108,7 @@ void vm2::InstructionSet::op_read(vm2::State *state) {
     StackObject addressArgument = state->getStack().pop();
     if(!addressArgument.isGood())
         throw std::runtime_error("Read has received an none good argument.");
-    uint32_t readValue = state->readMemory(addressArgument.getValue());
+    uint32_t readValue = state->getLinearMemory().read(addressArgument.getValue());
 
     state->getStack().push(readValue, 0xc1);
     state->iterateIp();
