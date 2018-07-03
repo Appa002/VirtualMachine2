@@ -21,8 +21,8 @@ vm2::InstructionSet::InstructionSet() {
         instructionMapArray.at(0xb0 + i) = new vm2::SetNthRegisterInstruction(i);
     }
 
-    instructionMapArray.at(0xc0) = new Instruction(op_move);
-    instructionMapArray.at(0xc1) = new Instruction(op_read);
+    instructionMapArray.at(0xc1) = new Instruction(op_move);
+    instructionMapArray.at(0xc2) = new Instruction(op_read);
 
     instructionMapArray.at(0xd0) = new Instruction(op_push);
     instructionMapArray.at(0xd1) = new Instruction(op_remove);
