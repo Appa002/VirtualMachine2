@@ -757,6 +757,50 @@ int unit_nop(){
     return 0;
 }
 
+int unit_setSize(){
+    std::vector<uint8_t> code ({0xd0, 0, 0, 0, 5, 0xc0, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getLinearMemory().getPageSize(), 5);
+    ASSERT_EQUAL(state->readIp(), 0x11);
+    delete state;
+    return 0;
+}
+
+int unit_alloc(){
+    std::vector<uint8_t> code ({0xc3, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    bool errorTriggered = false;
+
+    try {
+        state->getLinearMemory().write(10, 5);
+    }catch (...){
+        errorTriggered = true;
+    }
+    ASSERT_EQUAL(errorTriggered, true);
+
+    state->getLinearMemory().setPageSize(10);
+    instructionSet.get(state->readIp())->call(state);
+
+    errorTriggered = false;
+    try {
+        state->getLinearMemory().write(5, 5);
+    }catch (std::runtime_error& err){
+        errorTriggered = true;
+    }
+
+    ASSERT_EQUAL(errorTriggered, false);
+    ASSERT_EQUAL(state->readIp(), 0x11);
+    delete state;
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
