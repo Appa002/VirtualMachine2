@@ -12,6 +12,8 @@ namespace vm2::maths{
     uint32_t manualSignedSubtracting(uint32_t a, uint32_t b);
     uint32_t manualSignedMultiplication(uint32_t a, uint32_t b);
     uint32_t manualSignedDivision(uint32_t a, uint32_t b);
+
+    uint32_t manualFloatAdding(uint32_t a, uint32_t b);
 }
 
 #endif //VM2_0_MATHS_H

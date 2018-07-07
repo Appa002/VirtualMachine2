@@ -3,7 +3,20 @@
 //
 
 #include <cstdint>
+#include <cmath>
+#include <iostream>
 #include "../header/maths.h"
+
+class FloatingPoint{
+public:
+    explicit FloatingPoint(uint32_t num) : sinage(num >> 31), exponent((num << 1) >> 23), mantissa((num << 9) >> 9) {}
+
+public:
+    const unsigned sinage : 1;
+    const unsigned exponent : 8;
+    const unsigned mantissa : 23;
+};
+
 
 uint32_t vm2::maths::manualSignedAdding(uint32_t a, uint32_t b) {
     bool isAPositive = (a & (uint32_t)1 << 31) == 0;
@@ -73,4 +86,12 @@ uint32_t vm2::maths::manualSignedDivision(uint32_t a, uint32_t b){
     else
         value = value & 0xffffffff >> 1;
     return value;
+}
+
+uint32_t vm2::maths::manualFloatAdding(uint32_t a, uint32_t b){
+    FloatingPoint aFloat(a);
+    FloatingPoint bFloat(b);
+
+
+
 }
