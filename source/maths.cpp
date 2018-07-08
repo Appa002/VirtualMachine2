@@ -7,16 +7,21 @@
 #include <iostream>
 #include "../header/maths.h"
 
-class FloatingPoint{
+class FloatParts{
 public:
-    explicit FloatingPoint(uint32_t num) : sinage(num >> 31), exponent((num << 1) >> 23), mantissa((num << 9) >> 9) {}
+    explicit FloatParts(uint32_t num) : sign(num >> 31), exponent((num << 1) >> 24), mantissa((num << 9) >> 9) {}
 
 public:
-    const unsigned sinage : 1;
-    const unsigned exponent : 8;
-    const unsigned mantissa : 23;
+    const uint32_t sign : 1;
+    const uint32_t exponent : 8;
+    const uint32_t mantissa : 23;
 };
 
+uint32_t readNthBit(uint32_t value, uint32_t n){
+    value = value >> n;
+    value = value & (uint32_t)1;
+    return value;
+}
 
 uint32_t vm2::maths::manualSignedAdding(uint32_t a, uint32_t b) {
     bool isAPositive = (a & (uint32_t)1 << 31) == 0;
@@ -88,10 +93,25 @@ uint32_t vm2::maths::manualSignedDivision(uint32_t a, uint32_t b){
     return value;
 }
 
-uint32_t vm2::maths::manualFloatAdding(uint32_t a, uint32_t b){
-    FloatingPoint aFloat(a);
-    FloatingPoint bFloat(b);
+float vm2::maths::readIEEE754Float(uint32_t num){
+    FloatParts parts(num);
+    const uint32_t bias = 127;
+
+    /* Calculates the fraction given by the mantissa.
+     * */
+    double fraction = 0;
+    for(uint32_t i = 0; i < 23; i++){
+        fraction += readNthBit(num, 22 - i) / pow(2, i + 1);
+    }
+    /*LaTex of below equation:
+     * \( value=(-1)^{sign}*(fraction + 1)*2^{exponent - bias} \)
+     * where: sign is the signage of the float
+     *        mantissa is the mantissa of the float
+     *        exponent is the exponent of the float
+     *        bias is a constant, here for single-precision float 127*/
+
+    double value = pow(-1, parts.sign) * (1 + fraction) * pow(2, (int32_t)parts.exponent - (int32_t)bias);
 
 
-
+    return static_cast<float>(value);
 }
