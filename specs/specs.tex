@@ -4,7 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\usepackage[cm]{fullpage}
+\usepackage[]{fullpage}
 \usepackage{hyperref}
 \usepackage{array}
 \usepackage{xcolor}
@@ -17,7 +17,7 @@
 \usepackage{longtable}
 \makesavenoteenv{tabular}
 \author{Batburger}
-\title{Virtual Machine 2.0 Specification}
+\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.4}
 
 \newenvironment{hex}[0]{\textcolor{gray}{0x}}
 
@@ -52,7 +52,9 @@
 		
  		\item[Argument]A \textit{argument} shall be a \textit{value} which is stored on the \textit{stack} and gets poped by an instruction.\footnote{We say the poped \textit{value} is the \textit{argument} of the instruction poping it.}
  		
-		\item[Instruction Pointer] The \textit{instruction pointer} is a pointer which points into the \textit{bytecode}. 		
+		\item[Instruction Pointer] The \textit{instruction pointer} is a pointer which points into the \textit{bytecode}. 	
+		
+		\item[Float] A \textit{float} refers to single-precision float	as defined by the \textsc{IEEE Std 754-2008 - IEEE Standard for Floating-Point Arithmetic}\footnote{\url{http://standards.ieee.org/findstds/standard/754-2008.html}}
  		
 
 	\end{description}
@@ -65,7 +67,6 @@
 	\label{technical_notes}	
 	Every instruction is defined to be one byte in size. The signage and type of a value is interpreted by the instruction to which it is being passed.\footnote{E.g. some instructions might interpret a value as n float or as a signed/unsigned integer} The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
 	
-	\newpage
 	\section{Instruction Set}
 	\label{instruction_set}
 	{\small We use "..." to specify a range of numbers. The first and last values are both included in the range.} \\
