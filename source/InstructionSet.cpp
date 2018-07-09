@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "../header/InstructionSet.h"
 #include "../header/SpecialInstructionImplementation.h"
 #include "../header/maths.h"
@@ -45,12 +46,13 @@ vm2::InstructionSet::InstructionSet() {
     instructionMapArray.at(0xea) = new Instruction(op_sdiv);
     instructionMapArray.at(0xeb) = new Instruction(op_fdiv);
 
-    instructionMapArray.at(0xec) = new Instruction(op_tof);
-    instructionMapArray.at(0xed) = new Instruction(op_abs);
+    instructionMapArray.at(0xec) = new Instruction(op_utof);
+    instructionMapArray.at(0xed) = new Instruction(op_stof);
+    instructionMapArray.at(0xee) = new Instruction(op_abs);
 
-    instructionMapArray.at(0xee) = new Instruction(op_ucmp);
-    instructionMapArray.at(0xef) = new Instruction(op_scmp);
-    instructionMapArray.at(0xf0) = new Instruction(op_fcmp);
+    instructionMapArray.at(0xef) = new Instruction(op_ucmp);
+    instructionMapArray.at(0xf0) = new Instruction(op_scmp);
+    instructionMapArray.at(0xf1) = new Instruction(op_fcmp);
 
     instructionMapArray.at(0x01) = new Instruction(op_jmp);
     instructionMapArray.at(0x02) = new Instruction(op_jless);
@@ -74,7 +76,7 @@ vm2::InstructionSet::~InstructionSet() {
 
 vm2::IInstruction* vm2::InstructionSet::get(uint8_t opt) {
     if(instructionMapArray.at(opt) == nullptr)
-        throw std::runtime_error("Unknown opt code");
+        throw std::runtime_error("Unknown opcode");
     return instructionMapArray.at(opt);
 }
 
@@ -157,7 +159,18 @@ void vm2::InstructionSet::op_sadd(vm2::State *state) {
 }
 
 void vm2::InstructionSet::op_fadd(vm2::State *state) {
-    // What is a float?
+    StackObject b = state->getStack()->pop();
+    StackObject a = state->getStack()->pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("sadd has received an none good argument.");
+
+    float aAsFloat = maths::readIEEE754Float(a.getValue());
+    float bAsFloat = maths::readIEEE754Float(b.getValue());
+
+    float result = aAsFloat + bAsFloat;
+    state->getStack()->push(maths::transformToIEEE754Float(result), 0xe2);
+
     state->iterateIp();
 }
 
@@ -186,7 +199,18 @@ void vm2::InstructionSet::op_ssub(vm2::State *state) {
 }
 
 void vm2::InstructionSet::op_fsub(vm2::State *state) {
-    // Floats are hard; k?
+    StackObject b = state->getStack()->pop();
+    StackObject a = state->getStack()->pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("sadd has received an none good argument.");
+
+    float aAsFloat = maths::readIEEE754Float(a.getValue());
+    float bAsFloat = maths::readIEEE754Float(b.getValue());
+
+    float result = aAsFloat - bAsFloat;
+    state->getStack()->push(maths::transformToIEEE754Float(result), 0xe5);
+
     state->iterateIp();
 }
 
@@ -215,7 +239,18 @@ void vm2::InstructionSet::op_smult(vm2::State *state) {
 }
 
 void vm2::InstructionSet::op_fmult(vm2::State *state) {
-    // Floats are hard; k?
+    StackObject b = state->getStack()->pop();
+    StackObject a = state->getStack()->pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("fmult has received an none good argument.");
+
+    float aAsFloat = maths::readIEEE754Float(a.getValue());
+    float bAsFloat = maths::readIEEE754Float(b.getValue());
+
+    float result = aAsFloat * bAsFloat;
+    state->getStack()->push(maths::transformToIEEE754Float(result), 0xe8);
+
     state->iterateIp();
 }
 
@@ -242,12 +277,47 @@ void vm2::InstructionSet::op_sdiv(vm2::State *state) {
 }
 
 void vm2::InstructionSet::op_fdiv(vm2::State *state) {
-    // floats are hard; k?
+    StackObject b = state->getStack()->pop();
+    StackObject a = state->getStack()->pop();
+
+    if(!a.isGood() || !b.isGood())
+        throw std::runtime_error("fdiv has received an none good argument.");
+
+    float aAsFloat = maths::readIEEE754Float(a.getValue());
+    float bAsFloat = maths::readIEEE754Float(b.getValue());
+
+    float result = aAsFloat / bAsFloat;
+    state->getStack()->push(maths::transformToIEEE754Float(result), 0xeb);
+
     state->iterateIp();
 }
 
-void vm2::InstructionSet::op_tof(vm2::State *state) {
-    // no clue how floats work, yet.
+void vm2::InstructionSet::op_utof(vm2::State *state) {
+    StackObject a = state->getStack()->pop();
+
+    if(!a.isGood())
+        throw std::runtime_error("utof has received an none good argument.");
+
+
+    float result = (float)a.getValue();
+    state->getStack()->push(maths::transformToIEEE754Float(result), 0xec);
+
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_stof(vm2::State *state) {
+    StackObject a = state->getStack()->pop();
+
+    if(!a.isGood())
+        throw std::runtime_error("stof has received an none good argument.");
+
+
+    float result = (float)(a.getValue() & 0x7FFFFFFF);
+    if(a.getValue() >> 31 == 1)
+        result = -1 * result;
+
+    state->getStack()->push(maths::transformToIEEE754Float(result), 0xed);
+
     state->iterateIp();
 }
 
@@ -257,7 +327,7 @@ void vm2::InstructionSet::op_abs(vm2::State *state) {
         throw std::runtime_error("abs called with none good value!");
 
     uint32_t value = arg.getValue() & 0xffffffff >> 1;
-    state->getStack()->push(value, 0xed);
+    state->getStack()->push(value, 0xee);
     state->iterateIp();
 }
 
@@ -274,7 +344,7 @@ void vm2::InstructionSet::op_ucmp(vm2::State *state) {
         flag = 1;
     else if(a.getValue() > b.getValue())
         flag = 2;
-    state->getStack()->push(flag, 0xee);
+    state->getStack()->push(flag, 0xef);
     state->iterateIp();
 }
 
@@ -286,19 +356,39 @@ void vm2::InstructionSet::op_scmp(vm2::State *state) {
 
     uint32_t flag = maths::manualSignedSubtracting(a.getValue(), b.getValue());
     if(flag == 0) // arg1 == arg2
-        state->getStack()->push(flag, 0xef);
+        state->getStack()->push(flag, 0xf0);
     else {
         if ((flag & (uint32_t) 1 << 31) == 0) // has the subtraction yield a positive number?
             flag = 2; // if yes => arg1 > arg2
         else // the subtraction yielded a negative number
             flag = 1; // => arg1 < arg2
-        state->getStack()->push(flag, 0xef);
+        state->getStack()->push(flag, 0xf0);
     }
     state->iterateIp();
 }
 
 void vm2::InstructionSet::op_fcmp(vm2::State *state) {
-    // floats are hard!
+    StackObject b = state->getStack()->pop();
+    StackObject a = state->getStack()->pop();
+
+    if (!a.isGood() || !b.isGood())
+        throw std::runtime_error("fcmp has received an none good argument.");
+
+    float aAsFloat = maths::readIEEE754Float(a.getValue());
+    float bAsFloat = maths::readIEEE754Float(b.getValue());
+
+    float testResult = aAsFloat - bAsFloat;
+    uint32_t flag = 0;
+    if(testResult == 0) // arg1 == arg2
+        state->getStack()->push(flag, 0xf1);
+    else {
+        if (testResult > 0)
+            flag = 2; // if yes => arg1 > arg2
+        else // the subtraction yielded a negative number
+            flag = 1; // => arg1 < arg2
+        state->getStack()->push(flag, 0xf1);
+    }
+
     state->iterateIp();
 }
 

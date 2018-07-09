@@ -396,7 +396,40 @@ int unit_fdiv(){
     return 0;
 }
 
-int unit_tof(){
+int unit_utof(){
+    // 0x80000000 // 2147483648
+    std::vector<uint8_t> code ({0xd0,  0x80, 0x00, 0x00, 0x00,     0xec, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xec)
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    // 0x4f000000 // 2147483648
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0x4f000000);
+    ASSERT_EQUAL(state->readIp(), 0x11);
+    delete(state);
+
+    return 0;
+}
+
+int unit_stof(){
+    // 0x 80 00 00 1e //-30
+    std::vector<uint8_t> code ({0xd0,  0x80, 0x00, 0x00, 0x1e,     0xed, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    instructionSet.get(state->readIp())->call(state);
+    instructionSet.get(state->readIp())->call(state);
+
+    ASSERT_EQUAL(state->getStack()->peek().getOpcode(), 0xed)
+    ASSERT_EQUAL(state->getStack()->peek().isGood(), true);
+    // 0xc1f00000 // -30
+    ASSERT_EQUAL(state->getStack()->peek().getValue(), 0xc1f00000);
+    ASSERT_EQUAL(state->readIp(), 0x11);
+    delete(state);
 
     return 0;
 }

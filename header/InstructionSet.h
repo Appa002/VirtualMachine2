@@ -52,7 +52,8 @@ namespace vm2{
         static void op_sdiv(State* state);
         static void op_fdiv(State* state);
 
-        static void op_tof(State* state);
+        static void op_utof(State* state);
+        static void op_stof(State* state);
         static void op_abs(State* state);
 
         static void op_ucmp(State* state);
