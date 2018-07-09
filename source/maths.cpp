@@ -23,6 +23,7 @@ uint32_t readNthBit(uint32_t value, uint32_t n){
     return value;
 }
 
+
 uint32_t vm2::maths::manualSignedAdding(uint32_t a, uint32_t b) {
     bool isAPositive = (a & (uint32_t)1 << 31) == 0;
     bool isBPositive = (b & (uint32_t)1 << 31) == 0;
@@ -114,4 +115,12 @@ float vm2::maths::readIEEE754Float(uint32_t num){
 
 
     return static_cast<float>(value);
+}
+
+uint32_t vm2::maths::transformToIEEE754Float(float num) {
+    static_assert(std::numeric_limits<float>::is_iec559,
+              "This code requires IEEE-754 floats");
+
+    // TODO: Make work for compilers not using IEEE 754 Floating point representation.
+    return *(uint32_t*)&num;
 }

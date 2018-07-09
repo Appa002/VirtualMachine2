@@ -14,6 +14,7 @@ namespace vm2::maths{
     uint32_t manualSignedDivision(uint32_t a, uint32_t b);
 
     float readIEEE754Float(uint32_t num);
+    uint32_t transformToIEEE754Float(float num);
 }
 
 #endif //VM2_0_MATHS_H
