@@ -17,7 +17,7 @@
 \usepackage{longtable}
 \makesavenoteenv{tabular}
 \author{Batburger}
-\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.4}
+\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.5}
 
 \newenvironment{hex}[0]{\textcolor{gray}{0x}}
 
@@ -117,15 +117,17 @@
 		\hline
 		\hex eb & fdiv & Divides two arguments and pushes the result onto the stack. (All used values are interpreted to be floats) \\
 		\hline
-		\hex ec & tof & One argument is transformed to be stored in float representation.\footnote{The instruction will store the number represented in its first argument with as much precision as a float allows. If precision is lost, no further actions are taken.} \\
+		\hex ec & utof & One argument is transformed to be stored in float representation.\footnote{\label{tof_footnote} The instruction will store the number represented in its first argument with as much precision as a float allows. If precision is lost, no further actions are taken.} (Value is interpreted to be unsigned)\\
 		\hline
-		\hex ed & abs & One argument is turned into a positive number. \\
+		\hex ed & stof & One argument is transformed to be stored in float representation.\footnoteref{tof_footnote} (Value is interpreted to be signed)\\
 		\hline
-		\hex ee & ucmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnote{\label{cmp_footnote} \textit{0} represents arg1 = arg2, \textit{1} represents arg1\textless arg2, \textit{2} represents arg1\textgreater arg2.} (All values are interpreted to be unsigned) \\
+		\hex ee & abs & One argument is turned into a positive number. \\
 		\hline
-		\hex ef & scmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be signed) \\
+		\hex ef & ucmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnote{\label{cmp_footnote} \textit{0} represents arg1 = arg2, \textit{1} represents arg1\textless arg2, \textit{2} represents arg1\textgreater arg2.} (All values are interpreted to be unsigned) \\
 		\hline
-		\hex f0 & fcmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be floats) \\
+		\hex f0 & scmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be signed) \\
+		\hline
+		\hex f1 & fcmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be floats) \\
 		\hline		
 		\hline
 		\hex 01 & jmp & Sets the ip to the address given by the first argument of this instruction. \\
