@@ -94,7 +94,12 @@ uint32_t vm2::maths::manualSignedDivision(uint32_t a, uint32_t b){
     return value;
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
 float vm2::maths::readIEEE754Float(uint32_t num){
+    if(std::numeric_limits<float>::is_iec559)
+        return *(float*)&num;
+
     FloatParts parts(num);
     const uint32_t bias = 127;
 
@@ -116,6 +121,7 @@ float vm2::maths::readIEEE754Float(uint32_t num){
 
     return static_cast<float>(value);
 }
+#pragma clang diagnostic pop
 
 uint32_t vm2::maths::transformToIEEE754Float(float num) {
     static_assert(std::numeric_limits<float>::is_iec559,
