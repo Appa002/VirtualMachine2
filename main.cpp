@@ -21,12 +21,15 @@ int main(int argc, char** argv) {
 
     for(size_t i = 2; i < argc; i++){
         int num = std::stoi(argv[i]);
-        auto value = static_cast<uint32_t>(num & 0x7FFF);
+        uint32_t value = *(uint32_t*)&num;
+        value &= 0x7FFF;
         if(num < 0)
             value |= 1 << 31;
 
         state->getStack()->push(value, 0x00);
     }
+
+    state->getStack()->push((uint32_t)argc, 0x00);
 
     while (state->readIp() != 0x11){
         instructionSet->get(state->readIp())->call(state);
