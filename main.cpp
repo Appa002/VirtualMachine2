@@ -19,6 +19,15 @@ int main(int argc, char** argv) {
     State* state = new State(argv[1]);
     InstructionSet* instructionSet = new InstructionSet();
 
+    for(size_t i = 2; i < argc; i++){
+        int num = std::stoi(argv[i]);
+        auto value = static_cast<uint32_t>(num & 0x7FFF);
+        if(num < 0)
+            value |= 1 << 31;
+
+        state->getStack()->push(value, 0x00);
+    }
+
     while (state->readIp() != 0x11){
         instructionSet->get(state->readIp())->call(state);
     }
