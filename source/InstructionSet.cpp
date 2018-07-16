@@ -64,7 +64,7 @@ vm2::InstructionSet::InstructionSet() {
     instructionMapArray.at(0x07) = new Instruction(op_return);
 
     instructionMapArray.at(0x10) = new Instruction(op_int);
-    instructionMapArray.at(0x12) = new Instruction(op_nop);
+    instructionMapArray.at(0x12) = new Instruction(op_noop);
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -481,7 +481,7 @@ void vm2::InstructionSet::op_int(vm2::State *state) {
     state->iterateIp();
 }
 
-void vm2::InstructionSet::op_nop(vm2::State *state) {
+void vm2::InstructionSet::op_noop(vm2::State *state) {
     state->iterateIp();
 }
 
