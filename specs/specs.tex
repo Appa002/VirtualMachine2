@@ -17,7 +17,7 @@
 \usepackage{longtable}
 \makesavenoteenv{tabular}
 \author{Batburger}
-\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.5}
+\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.6}
 
 \newenvironment{hex}[0]{\textcolor{gray}{0x}}
 
@@ -67,9 +67,13 @@
 	\label{technical_notes}	
 	Every instruction is defined to be one byte in size. The signage and type of a value is interpreted by the instruction to which it is being passed.\footnote{E.g. some instructions might interpret a value as n float or as a signed/unsigned integer} The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
 	
+	\section{Input Parameters}
+	\label{input_parameters}
+	Any command line arguments added to the VM executable after the file to execute\footnote{e.g. given "vm ./path/to/my/file 1024" 1024 would be considered.} will be pushed onto the stack in order of appearance; following that the amount of these numbers is pushed onto the stack. 	
+	
 	\section{Instruction Set}
 	\label{instruction_set}
-	{\small We use "..." to specify a range of numbers. The first and last values are both included in the range.} \\
+	We use "..." to specify a range of numbers. The first and last values are both included in the range. \\
 	\begin{longtable}[c]{c|l|p{9cm}}
 		\hline
 		Opcode & Name & Description \\
@@ -122,7 +126,7 @@
 		\hex ed & stof & One argument is transformed to be stored in float representation.\footnoteref{tof_footnote} (Value is interpreted to be signed)\\
 		\hline
 		\hex ee & abs & One argument is turned into a positive number. \\
-		\hline
+		\hline	
 		\hex ef & ucmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnote{\label{cmp_footnote} \textit{0} represents arg1 = arg2, \textit{1} represents arg1\textless arg2, \textit{2} represents arg1\textgreater arg2.} (All values are interpreted to be unsigned) \\
 		\hline
 		\hex f0 & scmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be signed) \\
@@ -149,7 +153,9 @@
 		\hline
 		\hex 11 & halt & Stops the vm. \\
 		\hline
-		\hex 12 & nop & Iterates the IP by one with no other changes to the state of the vm. \\
+		\hex 12 & noop & Iterates the IP by one with no other changes to the state of the vm. \\
+		\hline
+		\hex 13 & out & Prints one argument to standard out (The Value is written in decibel form.). \\
 		\hline
 		\caption{Instruction Set}
 		\end{longtable}
