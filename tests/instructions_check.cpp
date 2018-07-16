@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <sstream>
 #include "unit_framework.h"
 
 #include "../header/State.h"
@@ -980,6 +981,27 @@ int unit_alloc(){
     return 0;
 }
 
+int unit_out(){
+    std::vector<uint8_t> code ({0x13, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    state->getStack()->push(24, 0xd0);
+
+    // Redirect everything from std::cout to debugBuffer so we can inspect it.
+    std::stringstream buffer;
+    std::streambuf * old = std::cout.rdbuf(buffer.rdbuf());
+
+    instructionSet.get(state->readIp())->call(state);
+    std::cout.rdbuf(old);     // Restore normal std::cout behaviour
+
+    ASSERT_EQUAL(buffer.str(), "24 ");
+    ASSERT_EQUAL(state->readIp(), 0x11);
+
+    delete state;
+    return 0;
+}
+
 int main(){
     register_test(unit_readRegisterN);
     register_test(unit_setRegisterN);
@@ -1016,6 +1038,7 @@ int main(){
     register_test(unit_noop);
     register_test(unit_setSize);
     register_test(unit_alloc);
+    register_test(unit_out);
 
     start_unit_test();
 }

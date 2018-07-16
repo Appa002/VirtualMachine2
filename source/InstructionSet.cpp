@@ -65,6 +65,7 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMapArray.at(0x10) = new Instruction(op_int);
     instructionMapArray.at(0x12) = new Instruction(op_noop);
+    instructionMapArray.at(0x13) = new Instruction(op_out);
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -482,6 +483,16 @@ void vm2::InstructionSet::op_int(vm2::State *state) {
 }
 
 void vm2::InstructionSet::op_noop(vm2::State *state) {
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_out(vm2::State *state) {
+    StackObject arg = state->getStack()->pop();
+    if(!arg.isGood())
+        throw std::runtime_error("out received invalid argument.");
+
+    std::cout << std::to_string(arg.getValue()) << " ";
+
     state->iterateIp();
 }
 

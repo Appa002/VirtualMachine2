@@ -71,6 +71,7 @@ namespace vm2{
 
         static void op_int(State* state);
         static void op_noop(State* state);
+        static void op_out(State* state);
         ///
     public:
         vm2::IInstruction* get(uint8_t opt);
