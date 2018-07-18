@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <iterator>
+#include <algorithm>
 
 vm2::State::State(std::string filePath) {
     loadFile(filePath);
@@ -31,7 +32,7 @@ vm2::State::~State() {
 
 
 void vm2::State::loadFile(std::string &filePath) {
-    std::ifstream file;
+    std::basic_ifstream<char> file;
     file.open(filePath, std::ios::binary | std::ios::ate);
     if(!file.is_open())
         throw std::runtime_error("File could not be opened!");
@@ -43,12 +44,16 @@ void vm2::State::loadFile(std::string &filePath) {
     ip[size] = '\0';
 
     byteCode.reserve(size);
-    byteCode.insert(byteCode.begin(),
-                    std::istream_iterator<uint8_t>(file),
-                    std::istream_iterator<uint8_t>());
+    std::for_each(std::istreambuf_iterator<char>(file),
+                  std::istreambuf_iterator<char>(),
+                  [this](const char c){
+                      byteCode.push_back((unsigned char &&) c);
+                  });
 
     file.close();
+
 }
+
 
 void vm2::State::iterateIp(size_t amount) {
     if(amount < byteCode.size())
