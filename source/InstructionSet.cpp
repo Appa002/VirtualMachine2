@@ -65,7 +65,11 @@ vm2::InstructionSet::InstructionSet() {
 
     instructionMapArray.at(0x10) = new Instruction(op_int);
     instructionMapArray.at(0x12) = new Instruction(op_noop);
-    instructionMapArray.at(0x13) = new Instruction(op_out);
+
+    instructionMapArray.at(0x13) = new Instruction(op_unsignedOut);
+    instructionMapArray.at(0x14) = new Instruction(op_signedOut);
+    instructionMapArray.at(0x15) = new Instruction(op_floatOut);
+    instructionMapArray.at(0x16) = new Instruction(op_charOut);
 }
 
 vm2::InstructionSet::~InstructionSet() {
@@ -486,14 +490,45 @@ void vm2::InstructionSet::op_noop(vm2::State *state) {
     state->iterateIp();
 }
 
-void vm2::InstructionSet::op_out(vm2::State *state) {
-    StackObject arg = state->getStack()->pop();
-    if(!arg.isGood())
-        throw std::runtime_error("out received invalid argument.");
+void vm2::InstructionSet::op_unsignedOut(vm2::State *state) {
+    StackObject obj = state->getStack()->pop();
+    if(!obj.isGood())
+        throw std::runtime_error("unsignedOut received bad argument.");
 
-    std::cout << std::to_string(arg.getValue()) << " ";
-
+    std::cout << obj.getValue();
     state->iterateIp();
 }
+
+void vm2::InstructionSet::op_signedOut(vm2::State *state) {
+    StackObject obj = state->getStack()->pop();
+    if(!obj.isGood())
+        throw std::runtime_error("unsignedOut received bad argument.");
+
+    if(obj.getValue() >> 31 == 1)
+        std::cout << '-';
+
+    std::cout << (obj.getValue() & 0x7FFF);
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_floatOut(vm2::State *state) {
+    StackObject obj = state->getStack()->pop();
+    if(!obj.isGood())
+        throw std::runtime_error("unsignedOut received bad argument.");
+
+    std::cout << maths::readIEEE754Float(obj.getValue());
+    state->iterateIp();
+}
+
+void vm2::InstructionSet::op_charOut(vm2::State *state) {
+    StackObject obj = state->getStack()->pop();
+    if(!obj.isGood())
+        throw std::runtime_error("unsignedOut received bad argument.");
+
+    std::cout << (char)obj.getValue();
+    state->iterateIp();
+}
+
+
 
 ///

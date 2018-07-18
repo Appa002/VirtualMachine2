@@ -981,12 +981,12 @@ int unit_alloc(){
     return 0;
 }
 
-int unit_out(){
+int unit_unsignedOut(){
     std::vector<uint8_t> code ({0x13, 0x11});
     InstructionSet instructionSet = InstructionSet();
     State* state = new vm2::State(code);
 
-    state->getStack()->push(24, 0xd0);
+    state->getStack()->push(0x80000001, 0xd0);
 
     // Redirect everything from std::cout to debugBuffer so we can inspect it.
     std::stringstream buffer;
@@ -995,7 +995,70 @@ int unit_out(){
     instructionSet.get(state->readIp())->call(state);
     std::cout.rdbuf(old);     // Restore normal std::cout behaviour
 
-    ASSERT_EQUAL(buffer.str(), "24 ");
+    ASSERT_EQUAL(buffer.str(), "2147483649");
+    ASSERT_EQUAL(state->readIp(), 0x11);
+
+    delete state;
+    return 0;
+}
+
+int unit_signedOut(){
+    std::vector<uint8_t> code ({0x14, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    state->getStack()->push(0x80000001, 0xd0);
+
+    // Redirect everything from std::cout to debugBuffer so we can inspect it.
+    std::stringstream buffer;
+    std::streambuf * old = std::cout.rdbuf(buffer.rdbuf());
+
+    instructionSet.get(state->readIp())->call(state);
+    std::cout.rdbuf(old);     // Restore normal std::cout behaviour
+
+    ASSERT_EQUAL(buffer.str(), "-1");
+    ASSERT_EQUAL(state->readIp(), 0x11);
+
+    delete state;
+    return 0;
+}
+
+int unit_float(){
+    std::vector<uint8_t> code ({0x15, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    state->getStack()->push(0xbf000000, 0xd0);
+
+    // Redirect everything from std::cout to debugBuffer so we can inspect it.
+    std::stringstream buffer;
+    std::streambuf * old = std::cout.rdbuf(buffer.rdbuf());
+
+    instructionSet.get(state->readIp())->call(state);
+    std::cout.rdbuf(old);     // Restore normal std::cout behaviour
+
+    ASSERT_EQUAL(buffer.str(), "-0.5");
+    ASSERT_EQUAL(state->readIp(), 0x11);
+
+    delete state;
+    return 0;
+}
+
+int unit_charOut(){
+    std::vector<uint8_t> code ({0x16, 0x11});
+    InstructionSet instructionSet = InstructionSet();
+    State* state = new vm2::State(code);
+
+    state->getStack()->push(0x00000041, 0xd0);
+
+    // Redirect everything from std::cout to debugBuffer so we can inspect it.
+    std::stringstream buffer;
+    std::streambuf * old = std::cout.rdbuf(buffer.rdbuf());
+
+    instructionSet.get(state->readIp())->call(state);
+    std::cout.rdbuf(old);     // Restore normal std::cout behaviour
+
+    ASSERT_EQUAL(buffer.str(), "A");
     ASSERT_EQUAL(state->readIp(), 0x11);
 
     delete state;
@@ -1038,7 +1101,10 @@ int main(){
     register_test(unit_noop);
     register_test(unit_setSize);
     register_test(unit_alloc);
-    register_test(unit_out);
+    register_test(unit_unsignedOut);
+    register_test(unit_signedOut);
+    register_test(unit_float);
+    register_test(unit_charOut);
 
     start_unit_test();
 }
