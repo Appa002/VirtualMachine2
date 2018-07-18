@@ -17,7 +17,7 @@
 \usepackage{longtable}
 \makesavenoteenv{tabular}
 \author{Batburger}
-\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.6}
+\title{Virtual Machine 2.0 Specification \\ \small Version 1.0.7}
 
 \newenvironment{hex}[0]{\textcolor{gray}{0x}}
 
@@ -155,8 +155,15 @@
 		\hline
 		\hex 12 & noop & Iterates the IP by one with no other changes to the state of the vm. \\
 		\hline
-		\hex 13 & out & Prints one argument to standard out (The Value is written in decibel form.). \\
+		\hex 13 & unsignedOut & Prints one argument to standard out (The Value is written in unsigned decibel form.). \\
+		\hline			
+		\hex 14 & signedOut & Prints one argument to standard out (The Value is written in signed decibel form.). \\
+		\hline			
+		\hex 15 & floatOut & Prints one argument to standard out (The Value is written as float.). \\
+		\hline			
+		\hex 16 & charOut & Prints one argument to standard out (The Value is interpreted as a char.).\\
 		\hline
+
 		\caption{Instruction Set}
 		\end{longtable}
 	\section{Interrupts}
