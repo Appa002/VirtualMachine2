@@ -29,12 +29,16 @@ int main(int argc, char** argv) {
         state->getStack()->push(value, 0x00);
     }
 
-    state->getStack()->push((uint32_t)argc, 0x00);
+    state->getStack()->push((uint32_t)argc - 2, 0x00);
 
     while (state->readIp() != 0x11){
+        char opcode[5] = {0};
+        sprintf(opcode, "%#04x", state->readIp());
+        Logger::get().log("[INSTRUCTION] " + std::string(opcode));
+
         instructionSet->get(state->readIp())->call(state);
     }
-
+    std::cout << std::endl;
     delete state;
     delete instructionSet;
 
