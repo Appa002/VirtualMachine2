@@ -45,6 +45,7 @@ uint32_t vm2::maths::manualSignedSubtracting(uint32_t a, uint32_t b) {
         else
             return (a + b) & 0xffffffff >> 1;
     }
+    return 0x7f800001; // None signaling NaN.
 }
 
 uint32_t vm2::maths::manualSignedMultiplication(uint32_t a, uint32_t b){
