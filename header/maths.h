@@ -17,12 +17,6 @@ namespace  vm2::maths::detail{
         const uint32_t exponent : 8;
         const uint32_t mantissa : 23;
     };
-
-    auto readNthBit = [](uint32_t value, uint32_t n) -> uint32_t {
-            value = value >> n;
-            value = value & (uint32_t)1;
-            return value;
-    };
 }
 
 namespace vm2::maths{
@@ -39,6 +33,12 @@ namespace vm2::maths{
 
     template <typename T = float>
     auto readIEEE754Float(uint32_t num) -> typename std::enable_if<!std::numeric_limits<T>::is_iec559, float>::type{
+        auto readNthBit = [](uint32_t value, uint32_t n) -> uint32_t {
+            value = value >> n;
+            value = value & (uint32_t)1;
+            return value;
+        };
+
         detail::FloatParts parts(num);
         const uint32_t bias = 127;
 
@@ -46,7 +46,7 @@ namespace vm2::maths{
          * */
         double fraction = 0;
         for(uint32_t i = 0; i < 23; i++){
-            fraction += detail::readNthBit(num, 22 - i) / pow(2, i + 1);
+            fraction += readNthBit(num, 22 - i) / pow(2, i + 1);
         }
         /*LaTex of below equation:
          * \( value=(-1)^{sign}*(fraction + 1)*2^{exponent - bias} \)

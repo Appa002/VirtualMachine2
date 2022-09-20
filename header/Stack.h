@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <cstdint>
-
+#include <cstddef>
 #include "StackObject.h"
 
 namespace vm2{

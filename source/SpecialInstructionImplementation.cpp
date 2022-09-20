@@ -3,6 +3,7 @@
 //
 
 #include "../header/SpecialInstructionImplementation.h"
+#include <stdexcept>
 
 vm2::ReadNthRegisterInstruction::ReadNthRegisterInstruction(int n) : n(n) {}
 
