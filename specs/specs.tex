@@ -44,7 +44,7 @@
 		
 		\item[State] The \textit{state} of the vm refers to the data which is stored in the \textit{linear memory}, \textit{registers}, \textit{instruction pointer} and \textit{stack}.		
 		
-		\item[Instruction] An \textit{instruction} shall be callable, and modify the state of the vm, when called.
+		\item[Instruction] An \textit{instruction} shall be callable and modify the state of the vm, when called.
 			
 		\item[ByteCode] The \textit{bytecode} is an array of 8bit numbers which refer to instructions or static \textit{values}\footnote{4 8bit values are read and sticked together to build one 32bit number.}.	
 		
@@ -65,11 +65,11 @@
 	
 	\section{Technical notes}
 	\label{technical_notes}	
-	Every instruction is defined to be one byte in size. The signage and type of a value is interpreted by the instruction to which it is being passed.\footnote{E.g. some instructions might interpret a value as n float or as a signed/unsigned integer} The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
+	Every instruction is defined to be one byte in size. There are separate instructions for the different number types, but values are not strictly typed; one instruction could interpret a value to be unsigned, and the next instruction interprets the same value (at the same address) to be a float, for instance. The VM only exposes the values stored on the stack to the instructions, but internally the vm stores, besides the value, what instruction pushed that value onto the stack. (This is required so the \textit{return} instruction knows what value was pushed onto the stack by the \textit{call} instruction.)
 	
 	\section{Input Parameters}
 	\label{input_parameters}
-	Any command line arguments added to the VM executable after the file to execute\footnote{e.g. given "vm ./path/to/my/file 1024" 1024 would be considered.} will be pushed onto the stack in order of appearance; following that the amount of these numbers is pushed onto the stack. 	
+	Any command line arguments added to the VM executable after the file to execute\footnote{e.g. the number 1024 in "vm ./path/to/my/file 1024".} will be pushed onto the stack in order of appearance.
 	
 	\section{Instruction Set}
 	\label{instruction_set}
@@ -83,13 +83,13 @@
 		\hex b0...\hex b9 & setRegister0...setRegister9 & Writes one argument to the given register. \\
 		\hline
 		\hline
-		\hex c0 & setSize & Takes one argument which sets by how many addresses the linear memory gets expanded when calling \hex c3 (alloc)\footnote{Addresses are 32bit in size, therefore if you were to set this value to 32 you would, every time you call alloc, increase the linear memory by 1024bit (1 Kibibit).}. \textsc{You can call this instruction exactly ones.} \\
+		\hex c0 & setSize & Takes one argument, sets by how many multiples of 32 the linear memory gets expanded when calling \hex c3 (alloc)\footnote{Addresses are 32bit in size, therefore if you were to set this value to 32 you would, every time you call alloc, increase the linear memory by 1024bit (1 Kibibit).}. \textsc{You can call this instruction exactly once.} \\
 		\hline
 		\hex c1 & move & Writes the first argument into linear memory at the address given by the second argument. \\
 		\hline		
-		\hex c2 & read & Pushes the value, specified by the address given as first argument, from linear memory onto the stack. \\
+		\hex c2 & read & Pushes the value, specified by the address given as the first argument, from linear memory onto the stack. \\
 		\hline
-		\hex c3 & alloc & Expands the writeable address range in the linear memory by the size that was set with the instruction \hex c0 a.k.a. setSize.\footnote{If you want to write to linear memory you have to call this instruction at least ones; there would be no address to which you cloud write to otherwise.}\\
+		\hex c3 & alloc & Expands the writeable address range in the linear memory by the size that was set with the instruction \hex c0 a.k.a. setSize.\footnote{If you want to write to linear memory, you have to call this instruction at least once; there would be no address to which you could write to otherwise.}\\
 		\hline	
 		\hline	
 		\hex d0 & push & Pushes a value, specified by the next 4 bytes in the bytecode, onto the stack. \\
@@ -121,30 +121,30 @@
 		\hline
 		\hex eb & fdiv & Divides two arguments and pushes the result onto the stack. (All used values are interpreted to be floats) \\
 		\hline
-		\hex ec & utof & One argument is transformed to be stored in float representation.\footnote{\label{tof_footnote} The instruction will store the number represented in its first argument with as much precision as a float allows. If precision is lost, no further actions are taken.} (Value is interpreted to be unsigned)\\
+		\hex ec & utof & One argument is transformed to be stored in float representation.\footnote{\label{tof_footnote} The instruction will store the number represented in its first argument with as much precision as a float allows. If precision is lost, no further action is taken.} (Value is interpreted to be unsigned)\\
 		\hline
 		\hex ed & stof & One argument is transformed to be stored in float representation.\footnoteref{tof_footnote} (Value is interpreted to be signed)\\
 		\hline
 		\hex ee & abs & One argument is turned into a positive number. \\
 		\hline	
-		\hex ef & ucmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnote{\label{cmp_footnote} \textit{0} represents arg1 = arg2, \textit{1} represents arg1\textless arg2, \textit{2} represents arg1\textgreater arg2.} (All values are interpreted to be unsigned) \\
+		\hex ef & ucmp & Compares two argument; then pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnote{\label{cmp_footnote} \textit{0} represents arg1 = arg2, \textit{1} represents arg1\textless arg2, \textit{2} represents arg1\textgreater arg2.} (All values are interpreted to be unsigned) \\
 		\hline
-		\hex f0 & scmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be signed) \\
+		\hex f0 & scmp & Compares two argument; then pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be signed) \\
 		\hline
-		\hex f1 & fcmp & Compares two argument; Than pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be floats) \\
+		\hex f1 & fcmp & Compares two argument; then pushes a value onto the stack, which represents if arg1\textless arg2, or if arg1\textgreater arg2, or if arg1 = arg2.\footnoteref{cmp_footnote} (All values are interpreted to be floats) \\
 		\hline		
 		\hline
 		\hex 01 & jmp & Sets the ip to the address given by the first argument of this instruction. \\
 		\hline
-		\hex 02 & jless & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\textless arg2 (Arguments of \textit{cmp}). \\
+		\hex 02 & jless & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp}  that arg1\textless arg2 (Arguments of \textit{cmp}). \\
 		\hline
-		\hex 03 & jgreater & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\textgreater arg2 (Arguments of \textit{cmp}). \\
+		\hex 03 & jgreater & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} detriment that arg1\textgreater arg2 (Arguments of \textit{cmp}). \\
 		\hline
-		\hex 04 & jequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1=arg2 (Arguments of \textit{cmp}). \\
+		\hex 04 & jequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} detriment that arg1=arg2 (Arguments of \textit{cmp}). \\
 		\hline
-		\hex 05 & jNequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} determinant that arg1\(\neq \)arg2 (Arguments of \textit{cmp}). \\
+		\hex 05 & jNequal & Functions like the \textit{jmp} instruction if, and only if, the last \textit{cmp} detriment that arg1\(\neq \)arg2 (Arguments of \textit{cmp}). \\
 		\hline
-		\hex 06 & call & Sets the ip to the address specified in its first argument and pushes the address of this instruction in the bytecode onto the stack. \\
+		\hex 06 & call & Sets the ip to the address specified in its first argument and pushes the address of this instruction onto the stack. \\
 		\hline
 		\hex 07 & return & Looks through the stack, top to bottom, and jumps to the address which was put there by a previous \textit{call} instruction. \\
 		\hline
