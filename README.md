@@ -5,7 +5,7 @@ it is available in the [VirtualMachine2-Compiler](https://github.com/batburger/V
 That repository also includes a link to the "spec" of the virtual machine bytecode - it is incomplete, perhaps ambition and hubris 
 got the better of me, but I figured I'd leave it in the original state. Despite this, the virtual machine itself is 
 fully functional and can execute any algorithm. There is a third repository, [VirtualMachine2-Visualizer](https://github.com/batburger/VirtualMachine2-Visualizer) 
-which is an interactive terminal programme which you can use to explore the VM's bytecode. 
+which is an interactive terminal programme which you can use to explore the VM's bytecode. (This was created in 2018 / This is a hobby High School project)
 
 ## Dependencies
 * Depends only on the C++17 standard library.
